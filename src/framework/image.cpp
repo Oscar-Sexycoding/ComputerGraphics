@@ -326,6 +326,23 @@ bool Image::SaveTGA(const char* filename)
 	return true;
 }
 
+//Lab 1
+
+//Draw lines (DDA)
+void Image::DrawLineDDA(int x0, int y0, int x1, int y1, const Color& c)
+{
+    int dx = x1-x0;
+    int dy = y1-y0;
+    int d = std::max(abs(dx), abs(dy));
+    int v[2] = {(dx)/d, (dy)/d};
+    int curPoint[2] = {x0, y0};
+    for(unsigned int i = 0; i < d; ++i){
+        curPoint[0] += v[0];
+        curPoint[1] += v[1];
+        SetPixel(floor(curPoint[0]), floor(curPoint[1]), c);
+    }
+}
+
 #ifndef IGNORE_LAMBDAS
 
 // You can apply and algorithm for two images and store the result in the first one

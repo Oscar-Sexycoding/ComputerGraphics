@@ -43,6 +43,7 @@ public:
 	Image(unsigned int width, unsigned int height);
 	Image(const Image& c);
 	Image& operator = (const Image& c); // Assign operator
+    
 
 	// Destructor
 	~Image();
@@ -77,6 +78,9 @@ public:
 	bool LoadPNG(const char* filename, bool flip_y = true);
 	bool LoadTGA(const char* filename, bool flip_y = false);
 	bool SaveTGA(const char* filename);
+    
+    
+    void DrawLineDDA(int x0, int y0, int x1, int y1, const Color& c);
 
 	// Used to easy code
 	#ifndef IGNORE_LAMBDAS
@@ -124,3 +128,7 @@ public:
 
 	void Resize(unsigned int width, unsigned int height);
 };
+
+
+
+
