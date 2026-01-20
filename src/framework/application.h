@@ -17,6 +17,7 @@ public:
 	SDL_Window* window = nullptr;
 	int window_width;
 	int window_height;
+    int rect_border_width;
 
 	float time;
 

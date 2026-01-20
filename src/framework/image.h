@@ -79,8 +79,15 @@ public:
 	bool LoadTGA(const char* filename, bool flip_y = false);
 	bool SaveTGA(const char* filename);
     
+    //Lab 1
     
     void DrawLineDDA(int x0, int y0, int x1, int y1, const Color& c);
+    
+    void ScanLineDDA(int x0, int y0, int x1, int y1, std::vector<Vector2>& table);
+    
+    void DrawRect(int x, int y, int w, int h, const Color& borderColor, int borderWidth, bool isFilled, const Color& fillColor);
+    
+    void DrawTriangle(const Vector2& p0, const Vector2& p1, const Vector2& p2, const Color& borderColor, bool isFilled, const Color& fillColor);
 
 	// Used to easy code
 	#ifndef IGNORE_LAMBDAS

@@ -331,17 +331,86 @@ bool Image::SaveTGA(const char* filename)
 //Draw lines (DDA)
 void Image::DrawLineDDA(int x0, int y0, int x1, int y1, const Color& c)
 {
-    int dx = x1-x0;
-    int dy = y1-y0;
-    int d = std::max(abs(dx), abs(dy));
-    int v[2] = {(dx)/d, (dy)/d};
-    int curPoint[2] = {x0, y0};
+    float dx = x1-x0;
+    float dy = y1-y0;
+    float d = std::max(abs(dx), abs(dy));
+    float xstep = dx/d;
+    float ystep = dy/d;
+    float curPoint[2] = {float (x0),float (y0)};
     for(unsigned int i = 0; i < d; ++i){
-        curPoint[0] += v[0];
-        curPoint[1] += v[1];
+        curPoint[0] += xstep;
+        curPoint[1] += ystep;
         SetPixel(floor(curPoint[0]), floor(curPoint[1]), c);
     }
 }
+
+//Scan lines (DDA)
+void Image::ScanLineDDA(int x0, int y0, int x1, int y1, std::vector<Vector2>& table)
+{
+    float dx = x1-x0;
+    float dy = y1-y0;
+    float d = std::max(abs(dx), abs(dy));
+    float xstep = dx/d;
+    float ystep = dy/d;
+    float curPoint[2] = {float (x0),float (y0)};
+    for(unsigned int i = 0; i < d; ++i){
+        curPoint[0] += xstep;
+        curPoint[1] += ystep;
+        //Using vector: x = left limit, y = right limit
+        if (curPoint[1] >= 0 && curPoint[1] < table.size()){
+            table[curPoint[1]].x = std::min(table[curPoint[1]].x, curPoint[0]);
+            table[curPoint[1]].y = std::max(table[curPoint[1]].y, curPoint[0]);
+        }
+    }
+}
+
+//Draw rectangle
+void Image::DrawRect(int x, int y, int w, int h, const Color& borderColor, int borderWidth, bool isFilled, const Color& fillColor){
+    //Get limits
+    float lx = x + borderWidth;
+    float rx = x + w - borderWidth;
+    float by = y + borderWidth; //y+1
+    float ty = y + h - borderWidth; //y+h-1
+    
+    //Paint according to borders
+    for (unsigned int i = y; i < y + h; ++i){
+        if (i < by || i >= ty){
+            DrawLineDDA(x, i, x + w, i, borderColor);
+        }
+        else {
+            DrawLineDDA(x, i, lx, i, borderColor);
+            //Fill if necessary
+            if(isFilled){
+                DrawLineDDA(lx + 1, i, rx - 1, i, fillColor);
+            }
+            DrawLineDDA(rx, i, x + w, i, borderColor);
+        }
+    }
+}
+
+void Image::DrawTriangle(const Vector2& p0, const Vector2& p1, const Vector2& p2, const Color& borderColor, bool isFilled, const Color& fillColor){
+    if (isFilled){
+        std::vector<Vector2> table(this->height, Vector2(1000000, -1000000)); //Initialize extremes to ensure no min max errors
+        ScanLineDDA(int (p0.x), int (p0.y), int (p1.x), int (p1.y), table);
+        ScanLineDDA(int (p1.x), int (p1.y), int (p2.x), int (p2.y), table);
+        ScanLineDDA(int (p2.x), int (p2.y), int (p0.x), int (p0.y), table);
+        
+        //Fill triangle
+        for (unsigned int i = 0; i < this->height; ++i){
+            if (table[i].x <= table[i].y){ //Check if row was modified
+                for (unsigned int x = int (table[i].x); x < int (table[i].y); x++){
+                    SetPixel(x, i, fillColor);
+                }
+            }
+        }
+    }
+    
+    //Draw border
+    DrawLineDDA(int (p0.x), int (p0.y), int (p1.x), int (p1.y), borderColor);
+    DrawLineDDA(int (p1.x), int (p1.y), int (p2.x), int (p2.y), borderColor);
+    DrawLineDDA(int (p2.x), int (p2.y), int (p0.x), int (p0.y), borderColor);
+}
+
 
 #ifndef IGNORE_LAMBDAS
 

@@ -17,6 +17,9 @@ Application::Application(const char* caption, int width, int height)
 	this->keystate = SDL_GetKeyboardState(nullptr);
 
 	this->framebuffer.Resize(w, h);
+    
+    // Initialize the border width
+    this->rect_border_width = 2;
 }
 
 Application::~Application()
@@ -33,8 +36,23 @@ void Application::Render(void)
 {
 	// ...
     framebuffer.Fill(Color::BLACK);
-
-    framebuffer.DrawLineDDA(x, y, x + 100 * cos(time), y + 100 * sin(time), color);
+    
+    int x = window_width/2;
+    int y = window_height/2;
+    
+    //DrawLine test
+    //framebuffer.DrawLineDDA(x, y, x + 100 * cos(time), y + 100 * sin(time), Color::RED);
+    
+    //DrawRectangle test
+    //int w = 300;
+    //int h = 200;
+    //framebuffer.DrawRect(x, y, w, h, Color::BLUE, rect_border_width, true, Color::WHITE);
+    
+    //DrawTriangle test
+    Vector2 p0(500, 240);
+    Vector2 p1(500, 480);
+    Vector2 p2(x + 100 * cos(time), y + 100 * sin(time));
+    framebuffer.DrawTriangle(p0, p1, p2, Color::WHITE, true, Color::PURPLE);
     
 	framebuffer.Render();
 }
@@ -49,9 +67,25 @@ void Application::Update(float seconds_elapsed)
 void Application::OnKeyPressed( SDL_KeyboardEvent event )
 {
 	// KEY CODES: https://wiki.libsdl.org/SDL2/SDL_Keycode
-	switch(event.keysym.sym) {
-		case SDLK_ESCAPE: exit(0); break; // ESC key, kill the app
-	}
+    switch(event.keysym.sym) {
+        case SDLK_ESCAPE: exit(0); break; // ESC key, kill the app
+            
+        //Change border width
+        case SDLK_PLUS:
+        case SDLK_KP_PLUS:
+            rect_border_width++;
+            break;
+            
+        case SDLK_MINUS:
+        case SDLK_KP_MINUS:
+            if (rect_border_width <= 1){ //Border width can't be negative
+                break;
+            }
+            else {
+                rect_border_width--;
+                break;
+            }
+    }
 }
 
 void Application::OnMouseButtonDown( SDL_MouseButtonEvent event )
