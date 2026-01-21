@@ -292,9 +292,10 @@ void Application::OnMouseButtonUp( SDL_MouseButtonEvent event )
 void Application::OnMouseMove(SDL_MouseButtonEvent event)
 {
     if (is_drawing && active_tool == PENCIL){
-        canvas.DrawLineDDA(mouse_position.x - event.x, mouse_position.y - event.y, mouse_position.x, mouse_position.y, active_color);
+        canvas.DrawLineDDA(last_mouse_position.x, last_mouse_position.y, mouse_position.x, mouse_position.y, active_color);
     }
-	
+    this->mouse_position = Vector2(event.x, event.y);
+    this->last_mouse_position = Vector2(event.x, event.y);
 }
 
 void Application::OnWheel(SDL_MouseWheelEvent event)
