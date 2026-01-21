@@ -420,12 +420,12 @@ void Image::DrawImage(const Image& image, int x, int y)
         for (int ix = 0; ix < image.width; ++ix)
         {
             Color c = image.GetPixel(ix, iy);
-            int dstX = x + ix;
-            int dstY = y + iy;
-            if (dstX >= 0 && dstX < this->width &&
-                dstY >= 0 && dstY < this->height)
+            int dX = x + ix;
+            int dY = y + iy;
+            if (dX >= 0 && dX < this->width &&
+                dY >= 0 && dY < this->height)
             {
-                SetPixel(dstX, dstY, c);
+                SetPixel(dX, dY, c);
             }
         }
     }
