@@ -49,12 +49,16 @@ void Application::Render(void)
     //framebuffer.DrawRect(x, y, w, h, Color::BLUE, rect_border_width, true, Color::WHITE);
     
     //DrawTriangle test
-    Vector2 p0(500, 240);
-    Vector2 p1(500, 480);
-    Vector2 p2(x + 100 * cos(time), y + 100 * sin(time));
-    framebuffer.DrawTriangle(p0, p1, p2, Color::WHITE, true, Color::PURPLE);
+    //Vector2 p0(500, 240);
+    //Vector2 p1(500, 480);
+    //Vector2 p2(x + 100 * cos(time), y + 100 * sin(time));
+    //framebuffer.DrawTriangle(p0, p1, p2, Color::WHITE, true, Color::PURPLE);
     
-	framebuffer.Render();
+    //DrawImage test
+    Image testIcon;
+    testIcon.LoadPNG("ComputerGraphics/res/images/pencil.png");
+    framebuffer.DrawImage(testIcon, 50, 50);
+    framebuffer.Render();
 }
 
 // Called after render

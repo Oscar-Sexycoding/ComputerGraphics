@@ -388,6 +388,7 @@ void Image::DrawRect(int x, int y, int w, int h, const Color& borderColor, int b
     }
 }
 
+//Draw triangle
 void Image::DrawTriangle(const Vector2& p0, const Vector2& p1, const Vector2& p2, const Color& borderColor, bool isFilled, const Color& fillColor){
     if (isFilled){
         std::vector<Vector2> table(this->height, Vector2(1000000, -1000000)); //Initialize extremes to ensure no min max errors
@@ -410,6 +411,26 @@ void Image::DrawTriangle(const Vector2& p0, const Vector2& p1, const Vector2& p2
     DrawLineDDA(int (p1.x), int (p1.y), int (p2.x), int (p2.y), borderColor);
     DrawLineDDA(int (p2.x), int (p2.y), int (p0.x), int (p0.y), borderColor);
 }
+
+//Drawing Tool
+void Image::DrawImage(const Image& image, int x, int y)
+{
+    for (int iy = 0; iy < image.height; ++iy)
+    {
+        for (int ix = 0; ix < image.width; ++ix)
+        {
+            Color c = image.GetPixel(ix, iy);
+            int dstX = x + ix;
+            int dstY = y + iy;
+            if (dstX >= 0 && dstX < this->width &&
+                dstY >= 0 && dstY < this->height)
+            {
+                SetPixel(dstX, dstY, c);
+            }
+        }
+    }
+}
+
 
 
 #ifndef IGNORE_LAMBDAS
