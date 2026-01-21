@@ -18,6 +18,9 @@ const Color Color::YELLOW(255,255,0);
 const Color Color::CYAN(0,255,255);
 const Color Color::PURPLE(255,0,255);
 
+//Lab 1 addition
+const Color Color::PINK(255, 192, 203);
+
 void Color::operator = (const Vector3& v)
 {
 	r = clamp( (unsigned char)v.x,0,255);

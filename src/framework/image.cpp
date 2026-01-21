@@ -415,17 +415,13 @@ void Image::DrawTriangle(const Vector2& p0, const Vector2& p1, const Vector2& p2
 //Drawing Tool
 void Image::DrawImage(const Image& image, int x, int y)
 {
-    for (int iy = 0; iy < image.height; ++iy)
-    {
-        for (int ix = 0; ix < image.width; ++ix)
-        {
-            Color c = image.GetPixel(ix, iy);
-            int dX = x + ix;
-            int dY = y + iy;
-            if (dX >= 0 && dX < this->width &&
-                dY >= 0 && dY < this->height)
-            {
-                SetPixel(dX, dY, c);
+    for (unsigned int i = 0; i < image.height; ++i){
+        for (unsigned int j = 0; j < image.width; ++j){
+            int dX = x + i;
+            int dY = y + j;
+            if (dX >= 0 && dX < this->width && dY >= 0 && dY < this->height){
+                Color c = image.GetPixel(i, j);
+                this->SetPixel(dX, dY, c);
             }
         }
     }
