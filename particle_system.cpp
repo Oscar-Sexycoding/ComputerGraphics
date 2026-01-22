@@ -6,7 +6,7 @@
 #include "main/includes.h"
 #include "framework.h"
 #include "particle_system.h"
-#include "image.h
+#include "image.h"
 
 
 float RandRange(float min, float max)

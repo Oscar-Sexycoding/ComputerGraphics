@@ -5,6 +5,7 @@
 
 #include "framework.h"
 #include "image.h"
+#include "particle_system.h"
 
 Application::Application(const char* caption, int width, int height)
 {
@@ -130,7 +131,7 @@ void Application::Render(void)
     //Vector2 p1(500, 480);
     //Vector2 p2(x + 100 * cos(time), y + 100 * sin(time));
     //framebuffer.DrawTriangle(p0, p1, p2, Color::WHITE, true, Color::PURPLE);
-    
+/*
     if (current_mode == MODE_PAINT) {
         framebuffer = canvas;
         
@@ -196,9 +197,17 @@ void Application::Render(void)
         framebuffer.DrawRect(targetX - 2, 8, 44, 34, Color::RED, 2, false, Color::RED);
     }
     else if (current_mode == MODE_ANIMATION){}
-    
+*/
+    ParticleSystem snow;
+    snow.Init();
+    float dt = 1.0f / 60.0f;
+    snow.Update(dt);
+    framebuffer.Fill(Color::BLACK);
+    snow.Render(&framebuffer);
     framebuffer.Render();
 }
+
+
 
 // Called after render
 void Application::Update(float seconds_elapsed)

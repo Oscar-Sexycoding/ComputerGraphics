@@ -13,6 +13,7 @@ int main(int argc, char **argv)
 	SDL_Window* window = app->window;
     
 	delete app;
+    
 
 	if (window) {
 		SDL_DestroyWindow(window);
