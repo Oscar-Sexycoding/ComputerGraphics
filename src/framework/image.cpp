@@ -376,8 +376,8 @@ void Image::DrawRect(int x, int y, int w, int h, const Color& borderColor, int b
     //Get limits
     float lx = x + borderWidth;
     float rx = x + w - borderWidth;
-    float by = y + borderWidth; //y+1
-    float ty = y + h - borderWidth; //y+h-1
+    float by = y + borderWidth;
+    float ty = y + h - borderWidth;
     
     //Paint according to borders
     for (unsigned int i = y; i < y + h; ++i){

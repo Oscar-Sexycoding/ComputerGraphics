@@ -63,13 +63,16 @@ public:
     Vector2 mouse_start;       //Starting drag point
     bool is_drawing;     //User state
     
-    Color active_fill_color; //Filling color
-    bool target_fill;        //Filling or not
+    Color active_fill_color;   //Filling color
+    bool target_fill;     //Filling mode or not
     
     Image icon_pencil, icon_line, icon_rectangle, icon_triangle, icon_eraser, icon_clear, icon_save, icon_load;
     Image icon_black, icon_white, icon_pink, icon_blue, icon_cyan, icon_green, icon_yellow, icon_red; //Colors
     std::vector<Button> ui_buttons; //Button list
     int toolbar_height = 50;
+    
+    eAppMode current_mode;  //Paint or animation
+    bool is_filled;
 
 	float time;
 
@@ -79,9 +82,6 @@ public:
 	Vector2 mouse_position; // Last mouse position
 	Vector2 mouse_delta; // Mouse movement in the last frame
     Vector2 last_mouse_position;
-    
-    eAppMode current_mode;  //Paint/animation
-    bool is_filled;    
 
 	void OnKeyPressed(SDL_KeyboardEvent event);
 	void OnMouseButtonDown(SDL_MouseButtonEvent event);

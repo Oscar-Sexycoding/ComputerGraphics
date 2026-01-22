@@ -109,8 +109,6 @@ void Application::Init(void)
 // Render one frame
 void Application::Render(void)
 {
-	// ...
-    
     //Pre-UI section (testing primitives)
     //framebuffer.Fill(Color::BLACK);
     
@@ -142,7 +140,7 @@ void Application::Render(void)
             else if (active_tool == RECT){
                 float x = std::min(mouse_start.x, mouse_position.x);
                 float y = std::min(mouse_start.y, mouse_position.y);
-                //Calculate absolutes (if not negative changes are not drawn)
+                //Calculate absolutes (if not, negative changes are not drawn)
                 float w = std::abs(mouse_position.x - mouse_start.x);
                 float h = std::abs(mouse_position.y - mouse_start.y);
                 framebuffer.DrawRect(x, y, w, h, active_color, rect_border_width, is_filled, active_fill_color);
@@ -156,7 +154,7 @@ void Application::Render(void)
         }
         
         //Toolbar
-        framebuffer.DrawRect(-2, 0, window_width + 1, toolbar_height, Color::WHITE, 1, true, Color::GRAY); //-2 and +1 (if not it wasn't filling the whole width)
+        framebuffer.DrawRect(-2, 0, window_width + 1, toolbar_height, Color::WHITE, 1, true, Color::GRAY); //-2 and +1 (if not it wasn't filling the entire screen)
         
         //Buttons (and highlight tools and color)
         for (int i = 0; i < ui_buttons.size(); ++i){
@@ -184,11 +182,11 @@ void Application::Render(void)
                 framebuffer.DrawRect(ui_buttons[i].position.x - 2, btn.position.y - 2, btn.icon->width + 2, btn.icon->height + 4, Color::RED, 2, false, Color::RED);
             }
         }
-        //Border color
+        //Border color selector
         framebuffer.DrawRect(window_width - 120, 10, 40, 30, Color::WHITE, 1, true, active_color);
             
         if(is_filled){
-            //Fill color
+            //Fill color selector
             framebuffer.DrawRect(window_width - 70, 10, 40, 30, Color::WHITE, 1, true, active_fill_color);
         }
         //Selection highlight
@@ -327,7 +325,7 @@ void Application::OnMouseButtonDown( SDL_MouseButtonEvent event )
                     break;
                 case BTN_SAVE:
                     canvas.SaveTGA("drawing.tga");
-                    std::cout << "Image saved to build folder" << std::endl;
+                    std::cout << "Image saved" << std::endl;
                     break;
                 case BTN_LOAD:
                     canvas.LoadTGA("drawing.tga");
