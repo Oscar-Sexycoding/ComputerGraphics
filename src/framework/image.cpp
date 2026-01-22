@@ -388,7 +388,7 @@ void Image::DrawRect(int x, int y, int w, int h, const Color& borderColor, int b
             DrawLineDDA(x, i, lx, i, borderColor);
             //Fill if necessary
             if(isFilled){
-                DrawLineDDA(lx + 1, i, rx - 1, i, fillColor);
+                DrawLineDDA(lx, i, rx, i, fillColor);
             }
             DrawLineDDA(rx, i, x + w, i, borderColor);
         }

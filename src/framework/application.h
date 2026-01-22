@@ -14,6 +14,9 @@ enum eTool {PENCIL, ERASER, LINE, RECT, TRIANGLE};
 //Buttons
 enum eButtonType {BTN_PENCIL, BTN_ERASER, BTN_LINE, BTN_RECT, BTN_TRIANGLE, BTN_CLEAR, BTN_LOAD, BTN_SAVE, BTN_BLACK, BTN_WHITE, BTN_PINK, BTN_BLUE, BTN_CYAN, BTN_GREEN, BTN_YELLOW, BTN_RED};
 
+//Modes
+enum eAppMode {MODE_PAINT, MODE_ANIMATION};
+
 //Lab 1
 class Button {
 public:
@@ -60,6 +63,9 @@ public:
     Vector2 mouse_start;       //Starting drag point
     bool is_drawing;     //User state
     
+    Color active_fill_color; //Filling color
+    bool target_fill;        //Filling or not
+    
     Image icon_pencil, icon_line, icon_rectangle, icon_triangle, icon_eraser, icon_clear, icon_save, icon_load;
     Image icon_black, icon_white, icon_pink, icon_blue, icon_cyan, icon_green, icon_yellow, icon_red; //Colors
     std::vector<Button> ui_buttons; //Button list
@@ -73,6 +79,9 @@ public:
 	Vector2 mouse_position; // Last mouse position
 	Vector2 mouse_delta; // Mouse movement in the last frame
     Vector2 last_mouse_position;
+    
+    eAppMode current_mode;  //Paint/animation
+    bool is_filled;    
 
 	void OnKeyPressed(SDL_KeyboardEvent event);
 	void OnMouseButtonDown(SDL_MouseButtonEvent event);
