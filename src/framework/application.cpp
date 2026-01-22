@@ -5,7 +5,7 @@
 
 #include "framework.h"
 #include "image.h"
-#include "particle_system.h"
+#include "particles.h"
 
 Application::Application(const char* caption, int width, int height)
 {

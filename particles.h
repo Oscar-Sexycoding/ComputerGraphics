@@ -1,12 +1,12 @@
-//  partile_system.h
+//  particles.h
 //  ComputerGraphics
 #pragma once
 
 #include "main/includes.h"
 #include "framework.h"
+#include "image.h"
 
 class ParticleSystem {
-
         static const int MAX_PARTICLES = ..;
 
         struct Particle {
