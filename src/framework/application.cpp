@@ -96,7 +96,6 @@ void Application::Init(void)
     ui_buttons.push_back(Button(&icon_yellow, Vector2(x, y), BTN_YELLOW));
     x += spacing;
     ui_buttons.push_back(Button(&icon_red, Vector2(x, y), BTN_RED));
-    x += spacing;
     
 	std::cout << "Initiating app..." << std::endl;
 }
@@ -134,7 +133,12 @@ void Application::Render(void)
             framebuffer.DrawLineDDA(mouse_start.x, mouse_start.y, mouse_position.x, mouse_position.y, active_color);
         }
         else if (active_tool == RECT){
-            framebuffer.DrawRect(mouse_start.x, mouse_start.y, mouse_position.x - mouse_start.x, mouse_position.y - mouse_start.y, active_color, 1, false, active_color);
+            float x = std::min(mouse_start.x, mouse_position.x);
+            float y = std::min(mouse_start.y, mouse_position.y);
+            //Calculate absolutes (if not negative changes are not drawn)
+            float w = std::abs(mouse_position.x - mouse_start.x);
+            float h = std::abs(mouse_position.y - mouse_start.y);
+            framebuffer.DrawRect(x, y, w, h, active_color, 1, false, active_color);
         }
         else if (active_tool == TRIANGLE){
             Vector2 p0(mouse_start.x + (mouse_position.x - mouse_start.x)/2, mouse_start.y);
@@ -147,15 +151,67 @@ void Application::Render(void)
     //Toolbar
     framebuffer.DrawRect(-2, 0, window_width + 1, toolbar_height, Color::WHITE, 1, true, Color::GRAY); //-2 and +1 (if not it wasn't filling the whole width)
     
-    //Buttons
+    //Buttons (and highlight tools and color)
     for (int i = 0; i < ui_buttons.size(); ++i){
-        ui_buttons[i].Render(framebuffer);
+        Button& btn = ui_buttons[i];
+        btn.Render(framebuffer);
+        
+        bool isSelectedTool = false;
+        if (active_tool == PENCIL && btn.type == BTN_PENCIL){
+            isSelectedTool = true;
+        }
+        if (active_tool == ERASER && btn.type == BTN_ERASER){
+            isSelectedTool = true;
+        }
+        if (active_tool == LINE && btn.type == BTN_LINE){
+            isSelectedTool = true;
+        }
+        if (active_tool == RECT && btn.type == BTN_RECT){
+            isSelectedTool = true;
+        }
+        if (active_tool == TRIANGLE && btn.type == BTN_TRIANGLE){
+            isSelectedTool = true;
+        }
+        
+        
+        if (isSelectedTool){
+            framebuffer.DrawRect(ui_buttons[i].position.x - 2, btn.position.y - 2, btn.icon->width + 4, btn.icon->height + 4, Color::RED, 2, false, Color::RED);
+        }
+        
+        bool isSelectedColor = false;
+        if (active_tool == ERASER && btn.type == BTN_BLACK){
+                isSelectedColor = true;
+        }
+        else if (active_tool != ERASER){
+            if (btn.type == BTN_BLACK && active_color.r == 0 && active_color.g == 0 && active_color.b == 0){
+                isSelectedColor = true;
+            }
+            if (btn.type == BTN_WHITE && active_color.r == 255 && active_color.g == 255 && active_color.b == 255){
+                isSelectedColor = true;
+            }
+            if (btn.type == BTN_PINK && active_color.r == 255 && active_color.g == 192 && active_color.b == 203){
+                isSelectedColor = true;
+            }
+            if (btn.type == BTN_BLUE  && active_color.r == 0 && active_color.g == 0 && active_color.b == 255){
+                isSelectedColor = true;
+            }
+            if (btn.type == BTN_CYAN && active_color.r == 0 && active_color.g == 255 && active_color.b == 255){
+                isSelectedColor = true;
+            }
+            if (btn.type == BTN_GREEN && active_color.r == 0 && active_color.g == 255 && active_color.b == 0){
+                isSelectedColor = true;
+            }
+            if (btn.type == BTN_YELLOW && active_color.r == 255 && active_color.g == 255 && active_color.b == 0){
+                isSelectedColor = true;
+            }
+            if (btn.type == BTN_RED && active_color.r == 255 && active_color.g == 0 && active_color.b == 0){
+                isSelectedColor = true;
+            }
+        }
+        if (isSelectedColor){
+            framebuffer.DrawRect(btn.position.x - 2, btn.position.y - 2, btn.icon->width + 4, btn.icon->height + 4, Color::RED, 2, false, Color::RED);
+        }
     }
-    
-    //Highlight tool in use
-    int highlightX = 17 + (active_tool * 50);
-    framebuffer.DrawRect(highlightX, 9, highlightX + 20, 35, Color::RED, 3, false, active_color);
-    
     //DrawImage test
     //Image testIcon;
     //testIcon.LoadPNG("ComputerGraphics/res/images/pencil.png");
@@ -196,7 +252,7 @@ void Application::OnKeyPressed( SDL_KeyboardEvent event )
 
 void Application::OnMouseButtonDown( SDL_MouseButtonEvent event )
 {
-    Vector2 mousePos(float (event.x), float (event.y));
+    Vector2 mousePos(float (event.x), float (framebuffer.height - event.y));
     bool clicked = false;
     
     for (int i = 0; i < ui_buttons.size(); ++i) {
@@ -216,11 +272,8 @@ void Application::OnMouseButtonDown( SDL_MouseButtonEvent event )
                 case BTN_TRIANGLE:
                     active_tool = TRIANGLE;
                     break;
-                    
-                    //Eraser = black pencil
                 case BTN_ERASER:
-                    active_tool = PENCIL;
-                    active_color = Color::BLACK;
+                    active_tool = ERASER;
                     break;
                     
                     
@@ -273,16 +326,21 @@ void Application::OnMouseButtonUp( SDL_MouseButtonEvent event )
 {
     if (event.button == SDL_BUTTON_LEFT && is_drawing){
         if (active_tool == LINE){
-            canvas.DrawLineDDA(mouse_start.x, mouse_start.y, event.x, event.y, active_color);
+            canvas.DrawLineDDA(mouse_start.x, mouse_start.y, event.x, framebuffer.height - event.y, active_color);
         }
         else if (active_tool == RECT){
-            canvas.DrawRect(mouse_start.x, mouse_start.y, event.x - mouse_start.x, event.y - mouse_start.y, active_color, 1, false, active_color);
+            float x = std::min(mouse_start.x, mouse_position.x);
+            float y = std::min(mouse_start.y, mouse_position.y);
+            //Calculate absolutes (if not negative changes are not drawn)
+            float w = std::abs(mouse_position.x - mouse_start.x);
+            float h = std::abs(mouse_position.y - mouse_start.y);
+            canvas.DrawRect(x, y, w, h, active_color, 1, false, active_color);
         }
         else if (active_tool == TRIANGLE){
             //Start is top, last point is right vertex
             Vector2 p0(mouse_start.x + (event.x - mouse_start.x)/2, mouse_start.y);
-            Vector2 p1(mouse_start.x, event.y);
-            Vector2 p2(event.x, event.y);
+            Vector2 p1(mouse_start.x, framebuffer.height - event.y);
+            Vector2 p2(event.x, framebuffer.height - event.y);
             canvas.DrawTriangle(p0, p1, p2, active_color, false, active_color);
         }
         is_drawing = false;
@@ -291,11 +349,16 @@ void Application::OnMouseButtonUp( SDL_MouseButtonEvent event )
 
 void Application::OnMouseMove(SDL_MouseButtonEvent event)
 {
+    Vector2 currentMouse(event.x, framebuffer.height - event.y);
+    
     if (is_drawing && active_tool == PENCIL){
-        canvas.DrawLineDDA(last_mouse_position.x, last_mouse_position.y, mouse_position.x, mouse_position.y, active_color);
+        canvas.DrawLineDDA(last_mouse_position.x, last_mouse_position.y, currentMouse.x, currentMouse.y, active_color);
     }
-    this->mouse_position = Vector2(event.x, event.y);
-    this->last_mouse_position = Vector2(event.x, event.y);
+    else if (is_drawing && active_tool == ERASER){ //Eraser = black pencil
+        canvas.DrawLineDDA(last_mouse_position.x, last_mouse_position.y, currentMouse.x, currentMouse.y, Color::BLACK);
+    }
+    this->last_mouse_position = currentMouse;
+    this->mouse_position = currentMouse;
 }
 
 void Application::OnWheel(SDL_MouseWheelEvent event)
