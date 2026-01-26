@@ -2,6 +2,7 @@
 #include "mesh.h"
 #include "shader.h"
 #include "utils.h"
+#include "entity.h"
 
 #include "framework.h"
 #include "image.h"
@@ -33,6 +34,12 @@ void Application::Init(void)
     canvas.Resize(window_width, window_height);
     canvas.Fill(Color::BLACK);
     
+    Mesh * mesh = new Mesh();
+
+    mesh->LoadOBJ("meshes/lee.obj");
+    
+    Entity ent = new Entity();
+    
 	std::cout << "Initiating app..." << std::endl;
 }
 
@@ -40,6 +47,8 @@ void Application::Init(void)
 void Application::Render(void)
 {
     framebuffer.Fill(Color::BLACK);
+    
+    
     
     framebuffer.Render();
 }
