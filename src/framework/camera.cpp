@@ -86,17 +86,34 @@ void Camera::UpdateViewMatrix()
 	view_matrix.SetIdentity();
 
 	// Comment this line to create your own projection matrix!
-	SetExampleViewMatrix();
+	// SetExampleViewMatrix();
 
 	// Remember how to fill a Matrix4x4 (check framework slides)
 	// Careful with the order of matrix multiplications, and be sure to use normalized vectors!
-	
-	// Create the view matrix rotation
-	// ...
-	// view_matrix.M[3][3] = 1.0;
+    
+    Vector3 f = (center - eye).Normalize();
+    Vector3 r = f.Cross(up).Normalize();
+    Vector3 u = r.Cross(f);
 
-	// Translate view matrix
-	// ...
+    Matrix44 rotation;
+    rotation.SetIdentity();
+    
+    rotation.M[0][0] = r.x;
+    rotation.M[1][0] = r.y;
+    rotation.M[2][0] = r.z;
+    
+    rotation.M[0][1] = u.x;
+    rotation.M[1][1] = u.y;
+    rotation.M[2][1] = u.z;
+
+    rotation.M[0][2] = -f.x;
+    rotation.M[1][2] = -f.y;
+    rotation.M[2][2] = -f.z;
+
+    Matrix44 translation;
+    translation.MakeTranslationMatrix(-eye.x, -eye.y, -eye.z);
+    
+    view_matrix = rotation * translation;
 
 	UpdateViewProjectionMatrix();
 }
@@ -108,17 +125,36 @@ void Camera::UpdateProjectionMatrix()
 	projection_matrix.SetIdentity();
 
 	// Comment this line to create your own projection matrix!
-	SetExampleProjectionMatrix();
-
+	// SetExampleProjectionMatrix();
+    
 	// Remember how to fill a Matrix4x4 (check framework slides)
+    
+    Matrix44 orto;
+    orto.SetIdentity();
+    
+    orto.M[0][0] = 2/(right-left);
+    orto.M[1][1] = 2/(top-bottom);
+    orto.M[2][2] = 2/(near_plane-far_plane);
+    
+    orto.M[3][0] = (-right-left)/(right-left);
+    orto.M[3][1] = (-top-bottom)/(top-bottom);
+    orto.M[3][2] = (-near_plane-far_plane)/(near_plane-far_plane);
 	
 	if (type == PERSPECTIVE) {
-		// projection_matrix.M[2][3] = -1;
-		// ...
+        float f = 1/tan((2*PI*fov)/2);
+        
+        Matrix44 p;
+        p.M[0][0] = f/aspect;
+        p.M[1][1] = f;
+        p.M[2][2] = (near_plane+far_plane)/(near_plane-far_plane);
+        p.M[2][3] = 1;
+        p.M[3][2] = (2*near_plane*far_plane)/(near_plane-far_plane);
+        
+        projection_matrix = orto * p;
 	}
 	else if (type == ORTHOGRAPHIC) {
-		// ...
-	} 
+        projection_matrix = orto;
+	}
 
 	UpdateViewProjectionMatrix();
 }

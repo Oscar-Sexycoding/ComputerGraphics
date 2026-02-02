@@ -38,7 +38,7 @@ void Application::Init(void)
 
     mesh->LoadOBJ("meshes/lee.obj");
     
-    Entity ent = new Entity();
+    Entity* ent = new Entity(mesh, Matrix44());
     
 	std::cout << "Initiating app..." << std::endl;
 }
@@ -47,7 +47,6 @@ void Application::Init(void)
 void Application::Render(void)
 {
     framebuffer.Fill(Color::BLACK);
-    
     
     
     framebuffer.Render();

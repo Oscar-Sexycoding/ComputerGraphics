@@ -311,35 +311,35 @@ Vector2 parseVector2(const char* text)
 
 Vector3 parseVector3(const char* text, const char separator)
 {
-	int pos = 0;
-	char num[255];
-	const char* start = text;
-	const char* current = text;
-	Vector3 result;
-
-	while (1)
-	{
-		if (*current == separator || (*current == '\0' && current != text))
-		{
-			strncpy(num, start, current - start);
-			num[current - start] = '\0';
-			start = current + 1;
-			if (num[0] != 'x') //
-				switch (pos)
-				{
-				case 0: result.x = (float)atof(num); break;
-				case 1: result.y = (float)atof(num); break;
-				case 2: result.z = (float)atof(num); break;
-				default: return result; break;
-				}
-
-			++pos;
-			if (*current == '\0')
-				break;
-		}
-
-		++current;
-	}
-
-	return result;
+    int pos = 0;
+    char num[255];
+    const char* start = text;
+    const char* current = text;
+    Vector3 result;
+    
+    while (1)
+    {
+        if (*current == separator || (*current == '\0' && current != text))
+        {
+            strncpy(num, start, current - start);
+            num[current - start] = '\0';
+            start = current + 1;
+            if (num[0] != 'x') //
+                switch (pos)
+                {
+                    case 0: result.x = (float)atof(num); break;
+                    case 1: result.y = (float)atof(num); break;
+                    case 2: result.z = (float)atof(num); break;
+                    default: return result; break;
+                }
+            
+            ++pos;
+            if (*current == '\0')
+                break;
+        }
+        
+        ++current;
+    }
+    
+    return result;
 };
