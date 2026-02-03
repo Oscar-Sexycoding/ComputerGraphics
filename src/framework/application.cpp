@@ -26,6 +26,7 @@ Application::Application(const char* caption, int width, int height)
 
 Application::~Application()
 {
+    
 }
 
 void Application::Init(void)
@@ -34,11 +35,30 @@ void Application::Init(void)
     canvas.Resize(window_width, window_height);
     canvas.Fill(Color::BLACK);
     
-    Mesh * mesh = new Mesh();
+    camera = new Camera();
 
-    mesh->LoadOBJ("meshes/lee.obj");
+    camera->LookAt(Vector3(0.f, 0.f, 1.f), Vector3(0.f, 0.f, 0.f), Vector3(0.f, -1.f, 0.f));
+   
+    camera->SetPerspective(45.f, (float)window_width / (float)window_height, 0.1f, 100.f);
     
-    Entity* ent = new Entity(mesh, Matrix44());
+    mesh1 = new Mesh();
+    mesh1->LoadOBJ("meshes/lee.obj");
+    
+    mesh2 = new Mesh();
+    mesh2->LoadOBJ("meshes/anna.obj");
+    
+    mesh3 = new Mesh();
+    mesh3->LoadOBJ("meshes/cleo.obj");
+
+    Matrix44 model_matrix;
+    model_matrix.SetIdentity();
+    ent1 = new Entity(mesh1, model_matrix);
+    
+    model_matrix.MakeTranslationMatrix(1.f, 0.f, 0.f);
+    ent2 = new Entity(mesh2, model_matrix);
+    
+    model_matrix.MakeTranslationMatrix(-1.f, 0.f, 0.f);
+    ent3 = new Entity(mesh3, model_matrix);
     
 	std::cout << "Initiating app..." << std::endl;
 }
@@ -48,6 +68,9 @@ void Application::Render(void)
 {
     framebuffer.Fill(Color::BLACK);
     
+    ent1->Render(&framebuffer, camera, Color::BLUE);
+    ent2->Render(&framebuffer, camera, Color::RED);
+    ent3->Render(&framebuffer, camera, Color::YELLOW);
     
     framebuffer.Render();
 }
@@ -57,6 +80,10 @@ void Application::Render(void)
 // Called after render
 void Application::Update(float seconds_elapsed)
 {
+    time += seconds_elapsed;
+    ent1->Update(time);
+    ent2->Update(time);
+    ent3->Update(time);
 }
 
 //keyboard press event 

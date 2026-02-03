@@ -128,31 +128,33 @@ void Camera::UpdateProjectionMatrix()
 	// SetExampleProjectionMatrix();
     
 	// Remember how to fill a Matrix4x4 (check framework slides)
-    
-    Matrix44 orto;
-    orto.SetIdentity();
-    
-    orto.M[0][0] = 2/(right-left);
-    orto.M[1][1] = 2/(top-bottom);
-    orto.M[2][2] = 2/(near_plane-far_plane);
-    
-    orto.M[3][0] = (-right-left)/(right-left);
-    orto.M[3][1] = (-top-bottom)/(top-bottom);
-    orto.M[3][2] = (-near_plane-far_plane)/(near_plane-far_plane);
 	
 	if (type == PERSPECTIVE) {
-        float f = 1/tan((2*PI*fov)/2);
+        float f = 1.0/tan((PI*fov/180.0)*0.5);
         
         Matrix44 p;
         p.M[0][0] = f/aspect;
         p.M[1][1] = f;
         p.M[2][2] = (near_plane+far_plane)/(near_plane-far_plane);
-        p.M[2][3] = 1;
+        p.M[2][3] = -1;
         p.M[3][2] = (2*near_plane*far_plane)/(near_plane-far_plane);
+        p.M[3][2] = 0;
         
-        projection_matrix = orto * p;
+        projection_matrix = p;
 	}
 	else if (type == ORTHOGRAPHIC) {
+        
+        Matrix44 orto;
+        orto.SetIdentity();
+        
+        orto.M[0][0] = 2/(right-left);
+        orto.M[1][1] = 2/(top-bottom);
+        orto.M[2][2] = 2/(near_plane-far_plane);
+        
+        orto.M[3][0] = (-right-left)/(right-left);
+        orto.M[3][1] = (-top-bottom)/(top-bottom);
+        orto.M[3][2] = (-near_plane-far_plane)/(near_plane-far_plane);
+        
         projection_matrix = orto;
 	}
 

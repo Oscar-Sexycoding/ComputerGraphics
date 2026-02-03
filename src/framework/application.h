@@ -22,6 +22,16 @@ public:
     //Lab 1
     Image canvas;   //Drawing surface
     
+    //Lab 2
+    
+    Camera* camera;
+    Entity* ent1;
+    Entity* ent2;
+    Entity* ent3;
+    Mesh* mesh1;
+    Mesh* mesh2;
+    Mesh* mesh3;
+    
 	float time;
 
 	// Input
@@ -55,6 +65,7 @@ public:
 		this->window_width = width;
 		this->window_height = height;
 		this->framebuffer.Resize(width, height);
+        camera->UpdateViewProjectionMatrix();
 	}
 
 	Vector2 GetWindowSize()

@@ -4,7 +4,7 @@
 Entity::Entity(Mesh* me, Matrix44 mo){
     this->mesh = me;
     this->model = mo;
-    }
+}
 
 void Entity::Render(Image* framebuffer, Camera* camera, const Color& c){
     const std::vector<Vector3>& vertices = mesh->GetVertices();
@@ -38,6 +38,29 @@ void Entity::Render(Image* framebuffer, Camera* camera, const Color& c){
         framebuffer->DrawLineDDA((int)s2.x, (int)s2.y, (int)s0.x, (int)s0.y, c);
     }
 };
+
+void Entity::Update(float seconds_elapsed){
+    
+    model.SetIdentity();
+    Matrix44 rotation_matrix = Matrix44();
+    rotation_matrix.MakeRotationMatrix(seconds_elapsed * 0.5, Vector3(0, 1, 0));
+    int scale_time = int(seconds_elapsed) % 5;
+    Matrix44 scaling_matrix = Matrix44();
+    if(scale_time % 2 == 0){ //Even number
+        float scale = 1 + (seconds_elapsed - scale_time*5)/5;
+        scaling_matrix.MakeScaleMatrix(scale, scale, scale);
+    }
+    else{
+        float scale = 6 - (seconds_elapsed - scale_time*5)/5;
+        Matrix44 matrix = Matrix44();
+        scaling_matrix.MakeScaleMatrix(scale, scale, scale);
+    }
+    
+    model = scaling_matrix * rotation_matrix;
+    
+    
+    
+}
 
 
 
