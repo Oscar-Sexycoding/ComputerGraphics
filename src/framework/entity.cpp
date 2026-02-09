@@ -1,6 +1,7 @@
 #include "main/includes.h"
 #include "entity.h"
 #include "framework.h"
+#include <cmath>
 
 Entity::Entity(Mesh* me, Matrix44 mo){
     this->mesh = me;
@@ -40,37 +41,29 @@ void Entity::Render(Image* framebuffer, Camera* camera, const Color& c){
     }
 };
 
-void Entity::Update(float seconds_elapsed){
-    
+void Entity::UpdateT(float seconds_elapsed){
+    float x = model.M[3][0];
+    float y = model.M[3][1];
+    float z = sin(seconds_elapsed/(2*PI));
     model.SetIdentity();
-    Matrix44 rotation_matrix = Matrix44();
-    rotation_matrix.MakeRotationMatrix(seconds_elapsed * 0.5f, Vector3(0, 1, 0));
-    
-    int scale_time = int(seconds_elapsed) % 5;
-    Matrix44 scaling_matrix = Matrix44();
-    if(scale_time % 2 == 0){ //Even number
-        float scale = 1 + (seconds_elapsed - scale_time*5)/5;
-        scaling_matrix.MakeScaleMatrix(scale, scale, scale);
-    }
-    else{
-        float scale = 6 - (seconds_elapsed - scale_time*5)/5;
-        Matrix44 matrix = Matrix44();
-        scaling_matrix.MakeScaleMatrix(scale, scale, scale);
-    }
-    
-    Matrix44 translation_matrix = Matrix44();
-    translation_matrix.SetIdentity();
-    translation_matrix.M[3][0] = model.M[3][0];
-    translation_matrix.M[3][1] = model.M[3][1];
-    translation_matrix.M[3][2] = model.M[3][2];
-    
-    model = translation_matrix * scaling_matrix * rotation_matrix;
-    
-    
-    
+    model.MakeTranslationMatrix(x, y, z);
 }
 
+void Entity::UpdateR(float seconds_elapsed){
+    Matrix44 rotation_matrix = Matrix44();
+    rotation_matrix.MakeRotationMatrix(15 * DEG2RAD * seconds_elapsed, model.TopVector()); //15º per sec
+    
+    model = rotation_matrix * model;
+}
 
+void Entity::UpdateS(float seconds_elapsed){
+    float s = 1.f + sin(seconds_elapsed/PI) * 0.5f;
 
+    Vector3 right = model.RightVector().Normalize()*s;
+    Vector3 top = model.TopVector().Normalize()*s;
+    Vector3 front = model.FrontVector().Normalize()*s;
 
-
+    model.M[0][0] = right.x; model.M[1][0] = right.y; model.M[2][0] = right.z;
+    model.M[0][1] = top.x;   model.M[1][1] = top.y;   model.M[2][1] = top.z;
+    model.M[0][2] = front.x; model.M[1][2] = front.y; model.M[2][2] = front.z;
+};

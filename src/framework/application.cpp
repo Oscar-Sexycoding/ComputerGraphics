@@ -37,9 +37,9 @@ void Application::Init(void)
     
     camera = new Camera();
 
-    camera->LookAt(Vector3(0.f, 0.f, 1.f), Vector3(0.f, 0.f, 0.f), Vector3(0.f, -1.f, 0.f));
+    camera->LookAt(Vector3(0.f, 0.f, 1.5f), Vector3(0.f, -0.5f, 0.f), Vector3(0.f, -1.f, 0.f));
    
-    camera->SetPerspective(45.f, (float)window_width / (float)window_height, 0.1f, 100.f);
+    camera->SetPerspective(45.f, (float)window_width / (float)window_height, 0.1f, 50.f);
     
     mesh1 = new Mesh();
     mesh1->LoadOBJ("meshes/lee.obj");
@@ -51,13 +51,13 @@ void Application::Init(void)
     mesh3->LoadOBJ("meshes/cleo.obj");
 
     Matrix44 model_matrix;
-    model_matrix.SetIdentity();
+    model_matrix.MakeTranslationMatrix(0.f, -0.5f, 0.f);
     ent1 = new Entity(mesh1, model_matrix);
     
-    model_matrix.MakeTranslationMatrix(1.f, 0.f, 0.f);
+    model_matrix.MakeTranslationMatrix(1.f, -0.5f, 0.f);
     ent2 = new Entity(mesh2, model_matrix);
     
-    model_matrix.MakeTranslationMatrix(-1.f, 0.f, 0.f);
+    model_matrix.MakeTranslationMatrix(-1.f, -0.5f, 0.f);
     ent3 = new Entity(mesh3, model_matrix);
     
 	std::cout << "Initiating app..." << std::endl;
@@ -81,9 +81,10 @@ void Application::Render(void)
 void Application::Update(float seconds_elapsed)
 {
     time += seconds_elapsed;
-    ent1->Update(time);
-    ent2->Update(time);
-    ent3->Update(time);
+    ent1->UpdateT(time);
+    ent2->UpdateR(seconds_elapsed);
+    ent3->UpdateR(seconds_elapsed);
+    ent1->UpdateS(time);
 }
 
 //keyboard press event 

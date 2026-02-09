@@ -14,7 +14,9 @@ public:
     
     void Render(Image* framebuffer, Camera* camera, const Color& c);
 
-    void Update(float seconds_elapsed);
-
+    void UpdateT(float seconds_elapsed);
+    void UpdateR(float seconds_elapsed);
+    void UpdateS(float seconds_elapsed);
+    
 };
 
