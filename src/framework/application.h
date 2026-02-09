@@ -9,6 +9,9 @@
 #include "image.h"
 #include "entity.h"
 
+enum eMode {SINGLE_MODE, ANIMATION_MODE};
+enum eProperty { NEAR_P, FAR_P, FOV_P };
+
 class Application
 {
 public:
@@ -32,6 +35,15 @@ public:
     Mesh* mesh2;
     Mesh* mesh3;
     
+    float fov;
+    float near;
+    float far;
+    Vector3 center;
+    Vector3 eye;
+    Vector3 up;
+    
+    eMode current_mode;
+    eProperty selected_prop;
     
 	float time;
 
