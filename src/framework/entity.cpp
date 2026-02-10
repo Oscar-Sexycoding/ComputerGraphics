@@ -35,9 +35,13 @@ void Entity::Render(Image* framebuffer, Camera* camera, const Color& c){
         s2.x = (c2.x + 1.0) * 0.5 * (float)framebuffer->width;
         s2.y = (1.0 - c2.y) * 0.5 * (float)framebuffer->height;
         
-        framebuffer->DrawLineDDA((int)s0.x, (int)s0.y, (int)s1.x, (int)s1.y, c);
-        framebuffer->DrawLineDDA((int)s1.x, (int)s1.y, (int)s2.x, (int)s2.y, c);
-        framebuffer->DrawLineDDA((int)s2.x, (int)s2.y, (int)s0.x, (int)s0.y, c);
+        //Lab 3
+        framebuffer->DrawTriangle(s0, s1, s2, c, true, c);
+        
+        //Lab 2
+        //framebuffer->DrawLineDDA((int)s0.x, (int)s0.y, (int)s1.x, (int)s1.y, c);
+        //framebuffer->DrawLineDDA((int)s1.x, (int)s1.y, (int)s2.x, (int)s2.y, c);
+        //framebuffer->DrawLineDDA((int)s2.x, (int)s2.y, (int)s0.x, (int)s0.y, c);
     }
 };
 
