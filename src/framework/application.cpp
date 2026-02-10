@@ -35,10 +35,10 @@ void Application::Init(void)
     canvas.Fill(Color::BLACK);
     
     current_mode = SINGLE_MODE;
-    eProperty selected_prop = FOV_P;
+    selected_prop = FOV_P;
     fov = 45.f;
     near = 0.1f;
-    far = 50.f;
+    far = 10.f;
     center = Vector3(0.f, -0.5f, 0.f);
     eye = Vector3(0.f, 0.f, 1.5f);
     up = Vector3(0.f, -1.f, 0.f);
@@ -144,9 +144,9 @@ void Application::OnKeyPressed( SDL_KeyboardEvent event )
             if (selected_prop == FAR_P)  far -= 1.0f;
             if (selected_prop == FOV_P)  fov -= 1.0f;
             
-            if (near < 0.01f) near = 0.01f;
-            if (fov < near + 1.0f) fov = 1.0f;
             if (fov < 1.0f) fov = 1.0f;
+            if (near < 0.01f) near = 0.01f;
+            if (far < near + 0.1f) far = near + 0.1f;
             if (fov > 170.0f) fov = 170.0f;
             break;
     }
@@ -191,9 +191,15 @@ void Application::OnMouseMove(SDL_MouseButtonEvent event)
         eye = center + view;
     }
     if (right_button){
-        
+        float speed = 0.005f;
+        Vector3 view = (center - eye).Normalize();
+        Vector3 right_axis = view.Cross(up).Normalize();
+        Vector3 camera_up = right_axis.Cross(view).Normalize();
+
+        Vector3 offset = (right_axis * -mouse_delta.x + camera_up * -mouse_delta.y) * speed;
+        eye = eye + offset;
+        center = center + offset;
     }
-    
 }
 
 void Application::OnWheel(SDL_MouseWheelEvent event)
