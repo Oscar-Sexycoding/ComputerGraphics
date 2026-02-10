@@ -218,7 +218,8 @@ void Matrix44::MakeRotationMatrix( float angle_in_rad, const Vector3& axis )
 	m[9] = t * axis.y * axis.z - s * axis.x;
 	m[10] = t * axis.z * axis.z + c;
 	m[11] = 0;
-
+    
+    //fourth column
 	m[12] = 0;
 	m[13] = 0;
 	m[14] = 0;

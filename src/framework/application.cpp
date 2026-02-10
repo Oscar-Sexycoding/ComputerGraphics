@@ -64,6 +64,8 @@ void Application::Init(void)
     model_matrix.MakeTranslationMatrix(-1.f, -0.5f, 0.f);
     ent3 = new Entity(mesh3, model_matrix);
     
+    orbit_distance = eye.Distance(center);
+    
 	std::cout << "Initiating app..." << std::endl;
 }
 
@@ -79,7 +81,7 @@ void Application::Render(void)
         ent1->model.SetIdentity();
         ent1->model.MakeTranslationMatrix(0.f, -0.5f, 0.f);
         
-        ent1->Render(&framebuffer, camera, Color::BLUE);
+        ent1->Render(&framebuffer, camera, Color::YELLOW);
     }
     else if (current_mode == ANIMATION_MODE) {
         ent1->Render(&framebuffer, camera, Color::BLUE);
@@ -152,22 +154,61 @@ void Application::OnKeyPressed( SDL_KeyboardEvent event )
 
 void Application::OnMouseButtonDown( SDL_MouseButtonEvent event )
 {
+    last_mouse_position = Vector2(event.x, event.y);
+    if(event.button == SDL_BUTTON_LEFT)
+        left_button = true;
+    else if (event.button == SDL_BUTTON_RIGHT)
+        right_button = true;
 }
 
 void Application::OnMouseButtonUp( SDL_MouseButtonEvent event )
 {
-    
+    if(event.button == SDL_BUTTON_LEFT)
+        left_button = false;
+    else if (event.button == SDL_BUTTON_RIGHT)
+        right_button = false;
 }
 
 void Application::OnMouseMove(SDL_MouseButtonEvent event)
 {
-
+    mouse_position = Vector2(event.x, event.y);
+    mouse_delta = mouse_position - last_mouse_position;
+    last_mouse_position = mouse_position;
+    if (left_button){
+        float yaw = mouse_delta.x * 0.005f;
+        float pitch = mouse_delta.y * 0.005f;
+        Vector3 view = (eye - center).Normalize();
+        
+        Matrix44 rotY;
+        rotY.MakeRotationMatrix(-yaw, up);
+        Vector3 right_axis = view.Cross(up).Normalize();
+        Matrix44 rotX;
+        rotX.MakeRotationMatrix(-pitch, right_axis);
+        
+        view = rotY * view;
+        view = rotX * view;
+        view = view.Normalize() * orbit_distance;
+        eye = center + view;
+    }
+    if (right_button){
+        
+    }
+    
 }
 
 void Application::OnWheel(SDL_MouseWheelEvent event)
 {
 	float dy = event.preciseY;
-
+    float speed_zoom = 1.0f;
+    orbit_distance -= dy * speed_zoom;
+    
+    if (orbit_distance < 0.1f)
+        orbit_distance = 0.1f;
+    if (orbit_distance > 20.0f)
+        orbit_distance = 20.0f;
+    
+    Vector3 view = (eye - center).Normalize();
+    eye = center + view * orbit_distance;
 	// ...
 }
 
