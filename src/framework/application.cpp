@@ -36,6 +36,7 @@ void Application::Init(void)
     
     current_mode = SINGLE_MODE;
     selected_prop = FOV_P;
+    current_state = NO_OCCLUSION;
     fov = 45.f;
     near = 0.1f;
     far = 10.f;
@@ -48,21 +49,34 @@ void Application::Init(void)
     mesh1 = new Mesh();
     mesh1->LoadOBJ("meshes/lee.obj");
     
+    Image* texture1 = new Image();
+    texture1->LoadTGA("textures/lee_color_specular.tga");
+    
     Matrix44 model_matrix;
     model_matrix.MakeTranslationMatrix(0.f, -0.5f, 0.f);
     ent1 = new Entity(mesh1, model_matrix);
+    ent1->texture = texture1;
+    
     
     mesh2 = new Mesh();
     mesh2->LoadOBJ("meshes/anna.obj");
     
+    Image* texture2 = new Image();
+    texture2->LoadTGA("textures/anna_color_specular.tga");
+    
     model_matrix.MakeTranslationMatrix(1.f, -0.5f, 0.f);
     ent2 = new Entity(mesh2, model_matrix);
+    ent2->texture = texture2;
         
     mesh3 = new Mesh();
     mesh3->LoadOBJ("meshes/cleo.obj");
+    
+    Image* texture3 = new Image();
+    texture3->LoadTGA("textures/lee_color_specular.tga");
         
     model_matrix.MakeTranslationMatrix(-1.f, -0.5f, 0.f);
     ent3 = new Entity(mesh3, model_matrix);
+    ent3->texture = texture3;
     
     orbit_distance = eye.Distance(center);
     
@@ -76,7 +90,7 @@ void Application::Render(void)
     camera->SetPerspective(fov, (float)window_width / (float)window_height, near, far);
     
     FloatImage zbuffer(framebuffer.width, framebuffer.height);
-    zbuffer.Fill(1.0f);
+    zbuffer.Fill(9999.0f);
     framebuffer.Fill(Color::BLACK);
     
     if (current_mode == SINGLE_MODE) {
@@ -86,6 +100,7 @@ void Application::Render(void)
         ent1->Render(&framebuffer, camera, &zbuffer);
     }
     else if (current_mode == ANIMATION_MODE) {
+        //ent1->mode = eRenderMode::WIREFRAME; //Lab 2 animation (all objects are wireframes)
         ent1->Render(&framebuffer, camera, &zbuffer);
         ent2->Render(&framebuffer, camera, &zbuffer);
         ent3->Render(&framebuffer, camera, &zbuffer);
@@ -94,12 +109,11 @@ void Application::Render(void)
     framebuffer.Render();
 }
 
-
-
 // Called after render
 void Application::Update(float seconds_elapsed)
 {
     if(current_mode == ANIMATION_MODE){
+        //ent1->mode = eRenderMode::WIREFRAME; //Lab 2 animation (all objects are wireframes)
         time += seconds_elapsed;
         ent1->UpdateT(time);
         ent1->UpdateS(time);
@@ -150,6 +164,26 @@ void Application::OnKeyPressed( SDL_KeyboardEvent event )
             if (near < 0.01f) near = 0.01f;
             if (far < near + 0.1f) far = near + 0.1f;
             if (fov > 170.0f) fov = 170.0f;
+            break;
+            
+        //Lab 3
+        case SDLK_z:
+            ent1->use_occlusions = !ent1->use_occlusions;
+            ent2->use_occlusions = !ent2->use_occlusions;
+            ent3->use_occlusions = !ent3->use_occlusions;
+            break;
+        case SDLK_t:
+            ent1->use_texture = !ent1->use_texture;
+            ent2->use_texture = !ent2->use_texture;
+            ent3->use_texture = !ent3->use_texture;
+            break;
+        case SDLK_c:
+            if(ent1->mode == eRenderMode::TRIANGLES){
+                ent1->mode = eRenderMode::TRIANGLES_INTERPOLATED;
+            }
+            else{
+                ent1->mode = eRenderMode::TRIANGLES;
+            }
             break;
     }
 }

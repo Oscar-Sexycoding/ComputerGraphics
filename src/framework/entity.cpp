@@ -2,14 +2,20 @@
 #include "entity.h"
 #include "framework.h"
 #include <cmath>
+#include "image.h"
 
 Entity::Entity(Mesh* me, Matrix44 mo){
     this->mesh = me;
     this->model = mo;
+    this->mode = eRenderMode::WIREFRAME;
 }
 
 void Entity::Render(Image* framebuffer, Camera* camera, FloatImage* zBuffer){
     const std::vector<Vector3>& vertices = mesh->GetVertices();
+    
+    //Lab 3
+    const std::vector<Vector2>& uvs = mesh->GetUVs();
+    
     for (unsigned int i = 0; i < vertices.size(); i += 3){
         //Local to World
         Vector3 w0 = model * vertices[i];
@@ -36,18 +42,54 @@ void Entity::Render(Image* framebuffer, Camera* camera, FloatImage* zBuffer){
         s2.y = (1.0 - c2.y) * 0.5 * (float)framebuffer->height;
         
         //Lab 3
-        Vector3 p0(s0.x, s0.y, c0.z);
-        Vector3 p1(s1.x, s1.y, c1.z);
-        Vector3 p2(s2.x, s2.y, c2.z);
         Color color0 = Color::RED;
         Color color1 = Color::GREEN;
         Color color2 = Color::BLUE;
-        framebuffer->DrawTriangleInterpolated(p0, p1, p2, color0, color1, color2, zBuffer);
         
-        //Lab 2
-        //framebuffer->DrawLineDDA((int)s0.x, (int)s0.y, (int)s1.x, (int)s1.y, c);
-        //framebuffer->DrawLineDDA((int)s1.x, (int)s1.y, (int)s2.x, (int)s2.y, c);
-        //framebuffer->DrawLineDDA((int)s2.x, (int)s2.y, (int)s0.x, (int)s0.y, c);
+        switch(this->mode){
+            case eRenderMode::POINTCLOUD:
+                framebuffer->SetPixel((int)s0.x, (int)s0.y, color0);
+                framebuffer->SetPixel((int)s1.x, (int)s1.y, color0);
+                framebuffer->SetPixel((int)s2.x, (int)s2.y, color0);
+                break;
+            case eRenderMode::WIREFRAME: //Lab 2
+                framebuffer->DrawLineDDA((int)s0.x, (int)s0.y, (int)s1.x, (int)s1.y, color2);
+                framebuffer->DrawLineDDA((int)s1.x, (int)s1.y, (int)s2.x, (int)s2.y, color2);
+                framebuffer->DrawLineDDA((int)s2.x, (int)s2.y, (int)s0.x, (int)s0.y, color2);
+                break;
+            case eRenderMode::TRIANGLES:
+                
+                framebuffer->DrawTriangle(s0, s1, s2, color1, true, color1);
+                break;
+            case eRenderMode::TRIANGLES_INTERPOLATED:
+                Vector3 p0(s0.x, s0.y, c0.z);
+                Vector3 p1(s1.x, s1.y, c1.z);
+                Vector3 p2(s2.x, s2.y, c2.z);
+                sTriangleInfo triangle;
+                triangle.p[0] = p0; triangle.p[1] = p1; triangle.p[2] = p2;
+                triangle.uv[0] = uvs[i]; triangle.uv[1] = uvs[i+1]; triangle.uv[2] = uvs[i+2];
+                if(use_occlusions){
+                    if(use_texture){
+                        triangle.texture = this->texture;
+                        framebuffer->DrawTriangleInterpolated(triangle, zBuffer);
+                    }
+                    else{
+                        triangle.color[0] = color0; triangle.color[1] = color1; triangle.color[2] = color2;
+                        framebuffer->DrawTriangleInterpolated(p0, p1, p2, color0, color1, color2);
+                    }
+                }
+                else{
+                    if(use_texture){
+                        triangle.texture = this->texture;
+                        framebuffer->DrawTriangleInterpolated(triangle, nullptr);
+                    }
+                    else{
+                        triangle.color[0] = color0; triangle.color[1] = color1; triangle.color[2] = color2;
+                        framebuffer->DrawTriangleInterpolated(p0, p1, p2, color0, color1, color2, nullptr);
+                    }
+                }
+                break;
+        }
     }
 };
 

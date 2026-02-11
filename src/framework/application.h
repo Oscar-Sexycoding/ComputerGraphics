@@ -10,7 +10,8 @@
 #include "entity.h"
 
 enum eMode {SINGLE_MODE, ANIMATION_MODE};
-enum eProperty { NEAR_P, FAR_P, FOV_P };
+enum eProperty {NEAR_P, FAR_P, FOV_P};
+enum eState {OCCLUSION, NO_OCCLUSION};
 
 class Application
 {
@@ -44,6 +45,7 @@ public:
     
     eMode current_mode;
     eProperty selected_prop;
+    eState current_state;
     
 	float time;
 

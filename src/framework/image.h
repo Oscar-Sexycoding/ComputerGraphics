@@ -19,6 +19,7 @@
 class FloatImage;
 class Entity;
 class Camera;
+struct sTriangleInfo;
 
 // A matrix of pixels
 class Image
@@ -92,7 +93,9 @@ public:
     void DrawImage(const Image& image, int x, int y);
     
     //Lab3
+    void DrawTriangleInterpolated(const Vector3 &p0, const Vector3 &p1, const Vector3 &p2, const Color &c0, const Color &c1, const Color &c2);
     void DrawTriangleInterpolated(const Vector3 &p0, const Vector3 &p1, const Vector3 &p2, const Color &c0, const Color &c1, const Color &c2, FloatImage* zbuffer);
+    void DrawTriangleInterpolated(sTriangleInfo& triangle, FloatImage* zbuffer);
 
 	// Used to easy code
 	#ifndef IGNORE_LAMBDAS
@@ -140,7 +143,3 @@ public:
 
 	void Resize(unsigned int width, unsigned int height);
 };
-
-
-
-

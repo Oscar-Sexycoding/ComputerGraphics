@@ -8,6 +8,7 @@
 #include "utils.h"
 #include "camera.h"
 #include "mesh.h"
+#include "entity.h"
 
 Image::Image() {
 	width = 0; height = 0;
@@ -434,13 +435,14 @@ void Image::DrawImage(const Image& image, int x, int y)
     }
 }
 
-void Image::DrawTriangleInterpolated(const Vector3 &p0, const Vector3 &p1, const Vector3 &p2, const Color &c0, const Color &c1, const Color &c2, FloatImage* zbuffer)
+void Image::DrawTriangleInterpolated(const Vector3 &p0, const Vector3 &p1, const Vector3 &p2, const Color &c0, const Color &c1, const Color &c2)
 {
     int minX = (int)floor(std::min(p0.x, std::min(p1.x, p2.x)));
     int maxX = (int)floor(std::max(p0.x, std::max(p1.x, p2.x)));
     int minY = (int)floor(std::min(p0.y, std::min(p1.y, p2.y)));
     int maxY = (int)floor(std::max(p0.y, std::max(p1.y, p2.y)));
     
+    //Check it falls inside
     minX = std::max(minX, 0);
     minY = std::max(minY, 0);
     maxX = std::min(maxX, (int)width - 1);
@@ -456,6 +458,38 @@ void Image::DrawTriangleInterpolated(const Vector3 &p0, const Vector3 &p1, const
             if (w0 < 0 || w1 < 0 || w2 < 0) continue;
             
             float z = w0 * p0.z + w1 * p1.z + w2*p2.z;
+            
+            Color colorInter = c0*w0 + c1*w1 + c2*w2;
+            SetPixel(x, y, colorInter);
+        }
+    }
+}
+
+void Image::DrawTriangleInterpolated(const Vector3 &p0, const Vector3 &p1, const Vector3 &p2, const Color &c0, const Color &c1, const Color &c2, FloatImage* zbuffer)
+{
+    int minX = (int)floor(std::min(p0.x, std::min(p1.x, p2.x)));
+    int maxX = (int)floor(std::max(p0.x, std::max(p1.x, p2.x)));
+    int minY = (int)floor(std::min(p0.y, std::min(p1.y, p2.y)));
+    int maxY = (int)floor(std::max(p0.y, std::max(p1.y, p2.y)));
+    
+    //Check it falls inside
+    minX = std::max(minX, 0);
+    minY = std::max(minY, 0);
+    maxX = std::min(maxX, (int)width - 1);
+    maxY = std::min(maxY, (int)height - 1);
+    
+    float area = (p1.x - p0.x)*(p2.y - p0.y) - (p2.x - p0.x)*(p1.y - p0.y);
+    for (int y = minY; y <= maxY; ++y){
+        for (int x = minX; x <= maxX; ++x){
+            Vector3 p(x + 0.5f, y + 0.5f, 0);
+            float w0 = ((p1.x - p.x)*(p2.y - p.y) - (p2.x - p.x)*(p1.y - p.y)) / area;
+            float w1 = ((p2.x - p.x)*(p0.y - p.y) - (p0.x - p.x)*(p2.y - p.y)) / area;
+            float w2 = 1.0f - w0 - w1;
+            if (w0 < 0 || w1 < 0 || w2 < 0) continue;
+            
+            float z = w0 * p0.z + w1 * p1.z + w2*p2.z;
+            
+            
             float depth = zbuffer->GetPixel(x, y);
             if (z<depth){
                 zbuffer->SetPixel(x, y, z);
@@ -466,6 +500,76 @@ void Image::DrawTriangleInterpolated(const Vector3 &p0, const Vector3 &p1, const
     }
 }
 
+void Image::DrawTriangleInterpolated(sTriangleInfo& triangle, FloatImage* zbuffer)
+{
+    int minX = (int)floor(std::min(triangle.p[0].x, std::min(triangle.p[1].x, triangle.p[2].x)));
+    int maxX = (int)floor(std::max(triangle.p[0].x, std::max(triangle.p[1].x, triangle.p[2].x)));
+    int minY = (int)floor(std::min(triangle.p[0].y, std::min(triangle.p[1].y, triangle.p[2].y)));
+    int maxY = (int)floor(std::max(triangle.p[0].y, std::max(triangle.p[1].y, triangle.p[2].y)));
+    
+    //Check it falls inside
+    minX = std::max(minX, 0);
+    minY = std::max(minY, 0);
+    maxX = std::min(maxX, (int)width - 1);
+    maxY = std::min(maxY, (int)height - 1);
+    
+    float area = (triangle.p[1].x - triangle.p[0].x)*(triangle.p[2].y - triangle.p[0].y) - (triangle.p[2].x - triangle.p[0].x)*(triangle.p[1].y - triangle.p[0].y);
+    for (int y = minY; y <= maxY; ++y){
+        for (int x = minX; x <= maxX; ++x){
+            Vector3 p(x + 0.5f, y + 0.5f, 0);
+            float w0 = ((triangle.p[1].x - p.x)*(triangle.p[2].y - p.y) - (triangle.p[2].x - p.x)*(triangle.p[1].y - p.y)) / area;
+            float w1 = ((triangle.p[2].x - p.x)*(triangle.p[0].y - p.y) - (triangle.p[0].x - p.x)*(triangle.p[2].y - p.y)) / area;
+            float w2 = 1.0f - w0 - w1;
+            if (w0 < 0 || w1 < 0 || w2 < 0) continue;
+            
+            float z = w0 * triangle.p[0].z + w1 * triangle.p[1].z + w2*triangle.p[2].z;
+            
+            if(zbuffer){
+                float depth = zbuffer->GetPixel(x, y);
+                if (z<depth){
+                    if (triangle.texture) {
+                        float u = w0 * triangle.uv[0].x + w1 * triangle.uv[1].x + w2 * triangle.uv[2].x;
+                        float v = w0 * triangle.uv[0].y + w1 * triangle.uv[1].y + w2 * triangle.uv[2].y;
+                        
+                        //Tranform to pixel coordinate
+                        int tx = (int)(u * (triangle.texture->width - 1));
+                        int ty = (int)(v * (triangle.texture->height - 1));
+                        
+                        Color realColor = triangle.texture->GetPixelSafe(tx, ty);
+                        
+                        zbuffer->SetPixel(x, y, z);
+                        SetPixel(x, y, realColor);
+                    }
+                    else{
+                        Color colorInter = triangle.color[0]*w0 + triangle.color[1]*w1 + triangle.color[2]*w2;
+                        
+                        zbuffer->SetPixel(x, y, z);
+                        SetPixel(x, y, colorInter);
+                    }
+                }
+            }
+            else{
+                if (triangle.texture) {
+                    float u = w0 * triangle.uv[0].x + w1 * triangle.uv[1].x + w2 * triangle.uv[2].x;
+                    float v = w0 * triangle.uv[0].y + w1 * triangle.uv[1].y + w2 * triangle.uv[2].y;
+                    
+                    //Tranform to pixel coordinate
+                    int tx = (int)(u * (triangle.texture->width - 1));
+                    int ty = (int)(v * (triangle.texture->height - 1));
+                    
+                    Color realColor = triangle.texture->GetPixelSafe(tx, ty);
+    
+                    SetPixel(x, y, realColor);
+                }
+                else{
+                    Color colorInter = triangle.color[0]*w0 + triangle.color[1]*w1 + triangle.color[2]*w2;
+                    
+                    SetPixel(x, y, colorInter);
+                }
+            }
+        }
+    }
+}
 
 
 #ifndef IGNORE_LAMBDAS
