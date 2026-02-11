@@ -434,6 +434,38 @@ void Image::DrawImage(const Image& image, int x, int y)
     }
 }
 
+void Image::DrawTriangleInterpolated(const Vector3 &p0, const Vector3 &p1, const Vector3 &p2, const Color &c0, const Color &c1, const Color &c2, FloatImage* zbuffer)
+{
+    int minX = (int)floor(std::min(p0.x, std::min(p1.x, p2.x)));
+    int maxX = (int)floor(std::max(p0.x, std::max(p1.x, p2.x)));
+    int minY = (int)floor(std::min(p0.y, std::min(p1.y, p2.y)));
+    int maxY = (int)floor(std::max(p0.y, std::max(p1.y, p2.y)));
+    
+    minX = std::max(minX, 0);
+    minY = std::max(minY, 0);
+    maxX = std::min(maxX, (int)width - 1);
+    maxY = std::min(maxY, (int)height - 1);
+    
+    float area = (p1.x - p0.x)*(p2.y - p0.y) - (p2.x - p0.x)*(p1.y - p0.y);
+    for (int y = minY; y <= maxY; ++y){
+        for (int x = minX; x <= maxX; ++x){
+            Vector3 p(x + 0.5f, y + 0.5f, 0);
+            float w0 = ((p1.x - p.x)*(p2.y - p.y) - (p2.x - p.x)*(p1.y - p.y)) / area;
+            float w1 = ((p2.x - p.x)*(p0.y - p.y) - (p0.x - p.x)*(p2.y - p.y)) / area;
+            float w2 = 1.0f - w0 - w1;
+            if (w0 < 0 || w1 < 0 || w2 < 0) continue;
+            
+            float z = w0 * p0.z + w1 * p1.z + w2*p2.z;
+            float depth = zbuffer->GetPixel(x, y);
+            if (z<depth){
+                zbuffer->SetPixel(x, y, z);
+                Color colorInter = c0*w0 + c1*w1 + c2*w2;
+                SetPixel(x, y, colorInter);
+            }
+        }
+    }
+}
+
 
 
 #ifndef IGNORE_LAMBDAS

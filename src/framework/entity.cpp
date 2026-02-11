@@ -8,7 +8,7 @@ Entity::Entity(Mesh* me, Matrix44 mo){
     this->model = mo;
 }
 
-void Entity::Render(Image* framebuffer, Camera* camera, const Color& c){
+void Entity::Render(Image* framebuffer, Camera* camera, FloatImage* zBuffer){
     const std::vector<Vector3>& vertices = mesh->GetVertices();
     for (unsigned int i = 0; i < vertices.size(); i += 3){
         //Local to World
@@ -36,7 +36,13 @@ void Entity::Render(Image* framebuffer, Camera* camera, const Color& c){
         s2.y = (1.0 - c2.y) * 0.5 * (float)framebuffer->height;
         
         //Lab 3
-        framebuffer->DrawTriangle(s0, s1, s2, c, true, c);
+        Vector3 p0(s0.x, s0.y, c0.z);
+        Vector3 p1(s1.x, s1.y, c1.z);
+        Vector3 p2(s2.x, s2.y, c2.z);
+        Color color0 = Color::RED;
+        Color color1 = Color::GREEN;
+        Color color2 = Color::BLUE;
+        framebuffer->DrawTriangleInterpolated(p0, p1, p2, color0, color1, color2, zBuffer);
         
         //Lab 2
         //framebuffer->DrawLineDDA((int)s0.x, (int)s0.y, (int)s1.x, (int)s1.y, c);

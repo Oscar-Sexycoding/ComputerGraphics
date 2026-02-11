@@ -75,18 +75,20 @@ void Application::Render(void)
     camera->LookAt(eye, center, up);
     camera->SetPerspective(fov, (float)window_width / (float)window_height, near, far);
     
+    FloatImage zbuffer(framebuffer.width, framebuffer.height);
+    zbuffer.Fill(1.0f);
     framebuffer.Fill(Color::BLACK);
     
     if (current_mode == SINGLE_MODE) {
         ent1->model.SetIdentity();
         ent1->model.MakeTranslationMatrix(0.f, -0.5f, 0.f);
         
-        ent1->Render(&framebuffer, camera, Color::YELLOW);
+        ent1->Render(&framebuffer, camera, &zbuffer);
     }
     else if (current_mode == ANIMATION_MODE) {
-        ent1->Render(&framebuffer, camera, Color::BLUE);
-        ent2->Render(&framebuffer, camera, Color::RED);
-        ent3->Render(&framebuffer, camera, Color::YELLOW);
+        ent1->Render(&framebuffer, camera, &zbuffer);
+        ent2->Render(&framebuffer, camera, &zbuffer);
+        ent3->Render(&framebuffer, camera, &zbuffer);
     }
     
     framebuffer.Render();

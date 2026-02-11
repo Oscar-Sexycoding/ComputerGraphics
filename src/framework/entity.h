@@ -12,7 +12,7 @@ public:
     Entity(Mesh* me, Matrix44 mo);
     ~Entity();
     
-    void Render(Image* framebuffer, Camera* camera, const Color& c);
+    void Render(Image* framebuffer, Camera* camera, FloatImage* zBuffer);
 
     void UpdateT(float seconds_elapsed);
     void UpdateR(float seconds_elapsed);
