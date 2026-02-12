@@ -15,9 +15,6 @@ void Entity::Render(Image* framebuffer, Camera* camera, FloatImage* zBuffer){
     
     //Lab 3
     const std::vector<Vector2>& uvs = mesh->GetUVs();
-    const std::vector<Vector3>& normals = mesh->GetNormals();
-    Vector3 lightDir = Vector3(0,1,1);
-    lightDir.Normalize();
     
     for (unsigned int i = 0; i < vertices.size(); i += 3){
         //Local to World
