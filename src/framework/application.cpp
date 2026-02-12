@@ -72,7 +72,7 @@ void Application::Init(void)
     mesh3->LoadOBJ("meshes/cleo.obj");
     
     Image* texture3 = new Image();
-    texture3->LoadTGA("textures/lee_color_specular.tga");
+    texture3->LoadTGA("textures/cleo_color_specular.tga");
         
     model_matrix.MakeTranslationMatrix(-1.f, -0.5f, 0.f);
     ent3 = new Entity(mesh3, model_matrix);
@@ -90,7 +90,7 @@ void Application::Render(void)
     camera->SetPerspective(fov, (float)window_width / (float)window_height, near, far);
     
     FloatImage zbuffer(framebuffer.width, framebuffer.height);
-    zbuffer.Fill(9999.0f);
+    zbuffer.Fill(1.f);
     framebuffer.Fill(Color::BLACK);
     
     if (current_mode == SINGLE_MODE) {
@@ -100,7 +100,6 @@ void Application::Render(void)
         ent1->Render(&framebuffer, camera, &zbuffer);
     }
     else if (current_mode == ANIMATION_MODE) {
-        //ent1->mode = eRenderMode::WIREFRAME; //Lab 2 animation (all objects are wireframes)
         ent1->Render(&framebuffer, camera, &zbuffer);
         ent2->Render(&framebuffer, camera, &zbuffer);
         ent3->Render(&framebuffer, camera, &zbuffer);
@@ -113,7 +112,6 @@ void Application::Render(void)
 void Application::Update(float seconds_elapsed)
 {
     if(current_mode == ANIMATION_MODE){
-        //ent1->mode = eRenderMode::WIREFRAME; //Lab 2 animation (all objects are wireframes)
         time += seconds_elapsed;
         ent1->UpdateT(time);
         ent1->UpdateS(time);
@@ -166,7 +164,7 @@ void Application::OnKeyPressed( SDL_KeyboardEvent event )
             if (fov > 170.0f) fov = 170.0f;
             break;
             
-        //Lab 3
+            //Lab 3
         case SDLK_z:
             ent1->use_occlusions = !ent1->use_occlusions;
             ent2->use_occlusions = !ent2->use_occlusions;
@@ -178,11 +176,28 @@ void Application::OnKeyPressed( SDL_KeyboardEvent event )
             ent3->use_texture = !ent3->use_texture;
             break;
         case SDLK_c:
-            if(ent1->mode == eRenderMode::TRIANGLES){
+            if(ent1->mode == eRenderMode::TRIANGLES){       //Decided through the state of ent1
                 ent1->mode = eRenderMode::TRIANGLES_INTERPOLATED;
+                ent2->mode = eRenderMode::TRIANGLES_INTERPOLATED;
+                ent3->mode = eRenderMode::TRIANGLES_INTERPOLATED;
+                
+            }
+            else if(ent1->mode == eRenderMode::TRIANGLES_INTERPOLATED || ent1->mode == eRenderMode::WIREFRAME){
+                ent1->mode = eRenderMode::TRIANGLES;
+                ent2->mode = eRenderMode::TRIANGLES;
+                ent3->mode = eRenderMode::TRIANGLES;
+            }
+            break;
+        case SDLK_w:
+            if(ent1->mode == eRenderMode::TRIANGLES || ent1->mode == eRenderMode::TRIANGLES_INTERPOLATED){
+                ent1->mode = eRenderMode::WIREFRAME;
+                ent2->mode = eRenderMode::WIREFRAME;
+                ent3->mode = eRenderMode::WIREFRAME;
             }
             else{
                 ent1->mode = eRenderMode::TRIANGLES;
+                ent2->mode = eRenderMode::TRIANGLES;
+                ent3->mode = eRenderMode::TRIANGLES;
             }
             break;
     }

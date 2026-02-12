@@ -489,10 +489,15 @@ void Image::DrawTriangleInterpolated(const Vector3 &p0, const Vector3 &p1, const
             
             float z = w0 * p0.z + w1 * p1.z + w2*p2.z;
             
-            
-            float depth = zbuffer->GetPixel(x, y);
-            if (z<depth){
-                zbuffer->SetPixel(x, y, z);
+            if(zbuffer != nullptr){
+                float depth = zbuffer->GetPixel(x, y);
+                if (z<depth){
+                    zbuffer->SetPixel(x, y, z);
+                    Color colorInter = c0*w0 + c1*w1 + c2*w2;
+                    SetPixel(x, y, colorInter);
+                }
+            }
+            else{
                 Color colorInter = c0*w0 + c1*w1 + c2*w2;
                 SetPixel(x, y, colorInter);
             }
@@ -532,7 +537,7 @@ void Image::DrawTriangleInterpolated(sTriangleInfo& triangle, FloatImage* zbuffe
             
             float z = w0 * triangle.p[0].z + w1 * triangle.p[1].z + w2*triangle.p[2].z;
             
-            if(zbuffer){
+            if(zbuffer != nullptr){
                 float depth = zbuffer->GetPixel(x, y);
                 if (z<depth){
                     if (triangle.texture) {

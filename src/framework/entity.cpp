@@ -47,8 +47,6 @@ void Entity::Render(Image* framebuffer, Camera* camera, FloatImage* zBuffer){
         Color color1 = Color::GREEN;
         Color color2 = Color::BLUE;
         
-        
-        
         switch(this->mode){
             case eRenderMode::POINTCLOUD:
                 framebuffer->SetPixel((int)s0.x, (int)s0.y, color0);
@@ -78,7 +76,7 @@ void Entity::Render(Image* framebuffer, Camera* camera, FloatImage* zBuffer){
                     }
                     else{
                         triangle.color[0] = color0; triangle.color[1] = color1; triangle.color[2] = color2;
-                        framebuffer->DrawTriangleInterpolated(p0, p1, p2, color0, color1, color2);
+                        framebuffer->DrawTriangleInterpolated(p0, p1, p2, color0, color1, color2, zBuffer);
                     }
                 }
                 else{
