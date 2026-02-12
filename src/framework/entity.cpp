@@ -15,6 +15,9 @@ void Entity::Render(Image* framebuffer, Camera* camera, FloatImage* zBuffer){
     
     //Lab 3
     const std::vector<Vector2>& uvs = mesh->GetUVs();
+    const std::vector<Vector3>& normals = mesh->GetNormals();
+    Vector3 lightDir = Vector3(0,1,1);
+    lightDir.Normalize();
     
     for (unsigned int i = 0; i < vertices.size(); i += 3){
         //Local to World
@@ -25,6 +28,7 @@ void Entity::Render(Image* framebuffer, Camera* camera, FloatImage* zBuffer){
         Vector3 c0 = camera->ProjectVector(w0);
         Vector3 c1 = camera->ProjectVector(w1);
         Vector3 c2 = camera->ProjectVector(w2);
+
         
         if (c0.x < -1 || c0.x > 1 || c0.y < -1 || c0.y > 1 || c0.z < -1 || c0.z > 1 || c1.x < -1 || c1.x > 1 || c1.y < -1 || c1.y > 1 || c1.z < -1 || c1.z > 1 || c2.x < -1 || c2.x > 1 || c2.y < -1 || c2.y > 1 || c2.z < -1 || c2.z > 1) {
             continue; //Skip triangle
@@ -45,6 +49,8 @@ void Entity::Render(Image* framebuffer, Camera* camera, FloatImage* zBuffer){
         Color color0 = Color::RED;
         Color color1 = Color::GREEN;
         Color color2 = Color::BLUE;
+        
+        
         
         switch(this->mode){
             case eRenderMode::POINTCLOUD:

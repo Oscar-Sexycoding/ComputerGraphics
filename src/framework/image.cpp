@@ -512,8 +512,16 @@ void Image::DrawTriangleInterpolated(sTriangleInfo& triangle, FloatImage* zbuffe
     minY = std::max(minY, 0);
     maxX = std::min(maxX, (int)width - 1);
     maxY = std::min(maxY, (int)height - 1);
-    
+
     float area = (triangle.p[1].x - triangle.p[0].x)*(triangle.p[2].y - triangle.p[0].y) - (triangle.p[2].x - triangle.p[0].x)*(triangle.p[1].y - triangle.p[0].y);
+    if (area == 0.0f)
+        return;
+    
+    float iz0 = 1.0f / triangle.p[0].z;
+    float iz1 = 1.0f / triangle.p[1].z;
+    float iz2 = 1.0f / triangle.p[2].z;
+    
+    
     for (int y = minY; y <= maxY; ++y){
         for (int x = minX; x <= maxX; ++x){
             Vector3 p(x + 0.5f, y + 0.5f, 0);
@@ -528,8 +536,9 @@ void Image::DrawTriangleInterpolated(sTriangleInfo& triangle, FloatImage* zbuffe
                 float depth = zbuffer->GetPixel(x, y);
                 if (z<depth){
                     if (triangle.texture) {
-                        float u = w0 * triangle.uv[0].x + w1 * triangle.uv[1].x + w2 * triangle.uv[2].x;
-                        float v = w0 * triangle.uv[0].y + w1 * triangle.uv[1].y + w2 * triangle.uv[2].y;
+                        float iz = w0 * iz0 + w1 * iz1 + w2 * iz2;
+                        float u = (w0 * triangle.uv[0].x * iz0 + w1 * triangle.uv[1].x * iz1 + w2 * triangle.uv[2].x * iz2) / iz;
+                        float v = (w0 * triangle.uv[0].y * iz0 + w1 * triangle.uv[1].y * iz1 + w2 * triangle.uv[2].y * iz2) / iz;
                         
                         //Tranform to pixel coordinate
                         int tx = (int)(u * (triangle.texture->width - 1));
@@ -550,8 +559,9 @@ void Image::DrawTriangleInterpolated(sTriangleInfo& triangle, FloatImage* zbuffe
             }
             else{
                 if (triangle.texture) {
-                    float u = w0 * triangle.uv[0].x + w1 * triangle.uv[1].x + w2 * triangle.uv[2].x;
-                    float v = w0 * triangle.uv[0].y + w1 * triangle.uv[1].y + w2 * triangle.uv[2].y;
+                    float iz = w0 * iz0 + w1 * iz1 + w2 * iz2;
+                    float u = (w0 * triangle.uv[0].x * iz0 + w1 * triangle.uv[1].x * iz1 + w2 * triangle.uv[2].x * iz2) / iz;
+                    float v = (w0 * triangle.uv[0].y * iz0 + w1 * triangle.uv[1].y * iz1 + w2 * triangle.uv[2].y * iz2) / iz;
                     
                     //Tranform to pixel coordinate
                     int tx = (int)(u * (triangle.texture->width - 1));
