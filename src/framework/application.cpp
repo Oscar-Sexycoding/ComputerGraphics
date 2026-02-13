@@ -36,7 +36,6 @@ void Application::Init(void)
     
     current_mode = SINGLE_MODE;
     selected_prop = FOV_P;
-    current_state = NO_OCCLUSION;
     fov = 45.f;
     near = 0.1f;
     far = 10.f;
@@ -259,14 +258,11 @@ void Application::OnWheel(SDL_MouseWheelEvent event)
     float speed_zoom = 1.0f;
     orbit_distance -= dy * speed_zoom;
     
-    if (orbit_distance < 0.1f)
-        orbit_distance = 0.1f;
-    if (orbit_distance > 20.0f)
-        orbit_distance = 20.0f;
+    if (orbit_distance < 0.1f) orbit_distance = 0.1f;
+    if (orbit_distance > 20.0f) orbit_distance = 20.0f;
     
     Vector3 view = (eye - center).Normalize();
     eye = center + view * orbit_distance;
-	// ...
 }
 
 void Application::OnFileChanged(const char* filename)

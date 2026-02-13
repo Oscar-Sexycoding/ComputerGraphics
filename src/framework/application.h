@@ -11,7 +11,6 @@
 
 enum eMode {SINGLE_MODE, ANIMATION_MODE};
 enum eProperty {NEAR_P, FAR_P, FOV_P};
-enum eState {OCCLUSION, NO_OCCLUSION};
 
 class Application
 {
@@ -45,7 +44,11 @@ public:
     
     eMode current_mode;
     eProperty selected_prop;
-    eState current_state;
+    
+    Vector2 last_mouse_position;
+    bool left_button = false;
+    bool right_button = false;
+    float orbit_distance;
     
 	float time;
 
@@ -54,10 +57,7 @@ public:
 	int mouse_state; // Tells which buttons are pressed
 	Vector2 mouse_position; // Last mouse position
 	Vector2 mouse_delta; // Mouse movement in the last frame
-    Vector2 last_mouse_position;
-    bool left_button = false;
-    bool right_button = false;
-    float orbit_distance;
+    
 
 	void OnKeyPressed(SDL_KeyboardEvent event);
 	void OnMouseButtonDown(SDL_MouseButtonEvent event);

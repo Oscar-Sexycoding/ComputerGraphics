@@ -26,7 +26,6 @@ void Entity::Render(Image* framebuffer, Camera* camera, FloatImage* zBuffer){
         Vector3 c1 = camera->ProjectVector(w1);
         Vector3 c2 = camera->ProjectVector(w2);
 
-        
         if (c0.x < -1 || c0.x > 1 || c0.y < -1 || c0.y > 1 || c0.z < -1 || c0.z > 1 || c1.x < -1 || c1.x > 1 || c1.y < -1 || c1.y > 1 || c1.z < -1 || c1.z > 1 || c2.x < -1 || c2.x > 1 || c2.y < -1 || c2.y > 1 || c2.z < -1 || c2.z > 1) {
             continue; //Skip triangle
         }
@@ -59,7 +58,6 @@ void Entity::Render(Image* framebuffer, Camera* camera, FloatImage* zBuffer){
                 framebuffer->DrawLineDDA((int)s2.x, (int)s2.y, (int)s0.x, (int)s0.y, color2);
                 break;
             case eRenderMode::TRIANGLES:
-                
                 framebuffer->DrawTriangle(s0, s1, s2, color1, true, color1);
                 break;
             case eRenderMode::TRIANGLES_INTERPOLATED:
