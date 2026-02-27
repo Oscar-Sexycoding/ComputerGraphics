@@ -149,6 +149,7 @@ void launchLoop(Application* app)
 	app->mouse_position.set(static_cast<float>(x), static_cast<float>(y));
 
 	Uint32 start_time = SDL_GetTicks();
+    
 
 	// Infinite loop
 	while (1)

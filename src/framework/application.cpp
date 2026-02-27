@@ -9,6 +9,9 @@
 Application::Application(const char* caption, int width, int height)
 {
 	this->window = createWindow(caption, width, height);
+    
+    //set bg color
+    glClearColor(0.0, 0.0, 0.0, 1.0);
 
 	int w,h;
 	SDL_GetWindowSize(window,&w,&h);
