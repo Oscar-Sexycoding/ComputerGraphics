@@ -2,7 +2,6 @@
 #include "mesh.h"
 #include "shader.h"
 #include "utils.h"
-#include "entity.h"
 
 #include "framework.h"
 #include "image.h"
@@ -30,8 +29,6 @@ Application::~Application()
 void Application::Init(void)
 {
     //Initialize canva
-    canvas.Resize(window_width, window_height);
-    canvas.Fill(Color::BLACK);
     
 	std::cout << "Initiating app..." << std::endl;
 }

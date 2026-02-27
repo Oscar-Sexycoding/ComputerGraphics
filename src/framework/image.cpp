@@ -8,7 +8,6 @@
 #include "utils.h"
 #include "camera.h"
 #include "mesh.h"
-#include "entity.h"
 
 Image::Image() {
 	width = 0; height = 0;

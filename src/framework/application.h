@@ -7,10 +7,7 @@
 #include "main/includes.h"
 #include "framework.h"
 #include "image.h"
-#include "entity.h"
-
-enum eMode {SINGLE_MODE, ANIMATION_MODE};
-enum eProperty {NEAR_P, FAR_P, FOV_P};
+#include "camera.h"
 
 class Application
 {
@@ -58,7 +55,6 @@ public:
 		this->window_width = width;
 		this->window_height = height;
 		this->framebuffer.Resize(width, height);
-        camera->UpdateViewProjectionMatrix();
 	}
 
 	Vector2 GetWindowSize()
