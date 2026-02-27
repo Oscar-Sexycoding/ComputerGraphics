@@ -25,7 +25,6 @@ Application::Application(const char* caption, int width, int height)
 
 Application::~Application()
 {
-    
 }
 
 void Application::Init(void)
@@ -34,90 +33,19 @@ void Application::Init(void)
     canvas.Resize(window_width, window_height);
     canvas.Fill(Color::BLACK);
     
-    current_mode = SINGLE_MODE;
-    selected_prop = FOV_P;
-    fov = 45.f;
-    near = 0.1f;
-    far = 10.f;
-    center = Vector3(0.f, -0.5f, 0.f);
-    eye = Vector3(0.f, 0.f, 1.5f);
-    up = Vector3(0.f, -1.f, 0.f);
-    
-    camera = new Camera();
-    
-    mesh1 = new Mesh();
-    mesh1->LoadOBJ("meshes/lee.obj");
-    
-    Image* texture1 = new Image();
-    texture1->LoadTGA("textures/lee_color_specular.tga");
-    
-    Matrix44 model_matrix;
-    model_matrix.MakeTranslationMatrix(0.f, -0.5f, 0.f);
-    ent1 = new Entity(mesh1, model_matrix);
-    ent1->texture = texture1;
-    
-    
-    mesh2 = new Mesh();
-    mesh2->LoadOBJ("meshes/anna.obj");
-    
-    Image* texture2 = new Image();
-    texture2->LoadTGA("textures/anna_color_specular.tga");
-    
-    model_matrix.MakeTranslationMatrix(1.f, -0.5f, 0.f);
-    ent2 = new Entity(mesh2, model_matrix);
-    ent2->texture = texture2;
-        
-    mesh3 = new Mesh();
-    mesh3->LoadOBJ("meshes/cleo.obj");
-    
-    Image* texture3 = new Image();
-    texture3->LoadTGA("textures/cleo_color_specular.tga");
-        
-    model_matrix.MakeTranslationMatrix(-1.f, -0.5f, 0.f);
-    ent3 = new Entity(mesh3, model_matrix);
-    ent3->texture = texture3;
-    
-    orbit_distance = eye.Distance(center);
-    
 	std::cout << "Initiating app..." << std::endl;
 }
 
 // Render one frame
 void Application::Render(void)
 {
-    camera->LookAt(eye, center, up);
-    camera->SetPerspective(fov, (float)window_width / (float)window_height, near, far);
     
-    FloatImage zbuffer(framebuffer.width, framebuffer.height);
-    zbuffer.Fill(1.f);
-    framebuffer.Fill(Color::BLACK);
-    
-    if (current_mode == SINGLE_MODE) {
-        ent1->model.SetIdentity();
-        ent1->model.MakeTranslationMatrix(0.f, -0.5f, 0.f);
-        
-        ent1->Render(&framebuffer, camera, &zbuffer);
-    }
-    else if (current_mode == ANIMATION_MODE) {
-        ent1->Render(&framebuffer, camera, &zbuffer);
-        ent2->Render(&framebuffer, camera, &zbuffer);
-        ent3->Render(&framebuffer, camera, &zbuffer);
-    }
-    
-    framebuffer.Render();
 }
 
 // Called after render
 void Application::Update(float seconds_elapsed)
 {
-    if(current_mode == ANIMATION_MODE){
-        time += seconds_elapsed;
-        ent1->UpdateT(time);
-        ent1->UpdateS(time);
-        
-        ent2->UpdateR(seconds_elapsed);
-        ent3->UpdateR(seconds_elapsed);
-    }
+    
 }
 
 //keyboard press event 
@@ -126,143 +54,27 @@ void Application::OnKeyPressed( SDL_KeyboardEvent event )
     // KEY CODES: https://wiki.libsdl.org/SDL2/SDL_Keycode
     switch(event.keysym.sym) {
         case SDLK_ESCAPE: exit(0); break; // ESC key, kill the app
-        case SDLK_1:
-            current_mode = SINGLE_MODE;
-            break;
-            
-        case SDLK_2:
-            current_mode = ANIMATION_MODE;
-            break;
-            
-        case SDLK_n:
-            selected_prop = NEAR_P;
-            break;
-            
-        case SDLK_f:
-            selected_prop = FAR_P;
-            break;
-            
-        case SDLK_v:
-            selected_prop = FOV_P;
-            break;
-            
-        case SDLK_PLUS:
-            if (selected_prop == NEAR_P) near += 0.1f;
-            if (selected_prop == FAR_P)  far += 1.0f;
-            if (selected_prop == FOV_P)  fov += 1.0f;
-            break;
-            
-        case SDLK_MINUS:
-            if (selected_prop == NEAR_P) near -= 0.1f;
-            if (selected_prop == FAR_P)  far -= 1.0f;
-            if (selected_prop == FOV_P)  fov -= 1.0f;
-            
-            if (fov < 1.0f) fov = 1.0f;
-            if (near < 0.01f) near = 0.01f;
-            if (far < near + 0.1f) far = near + 0.1f;
-            if (fov > 170.0f) fov = 170.0f;
-            break;
-            
-            //Lab 3
-        case SDLK_z:
-            ent1->use_occlusions = !ent1->use_occlusions;
-            ent2->use_occlusions = !ent2->use_occlusions;
-            ent3->use_occlusions = !ent3->use_occlusions;
-            break;
-        case SDLK_t:
-            ent1->use_texture = !ent1->use_texture;
-            ent2->use_texture = !ent2->use_texture;
-            ent3->use_texture = !ent3->use_texture;
-            break;
-        case SDLK_c:
-            if(ent1->mode == eRenderMode::TRIANGLES){       //Decided through the state of ent1
-                ent1->mode = eRenderMode::TRIANGLES_INTERPOLATED;
-                ent2->mode = eRenderMode::TRIANGLES_INTERPOLATED;
-                ent3->mode = eRenderMode::TRIANGLES_INTERPOLATED;
-                
-            }
-            else if(ent1->mode == eRenderMode::TRIANGLES_INTERPOLATED || ent1->mode == eRenderMode::WIREFRAME){
-                ent1->mode = eRenderMode::TRIANGLES;
-                ent2->mode = eRenderMode::TRIANGLES;
-                ent3->mode = eRenderMode::TRIANGLES;
-            }
-            break;
-        case SDLK_w:
-            if(ent1->mode == eRenderMode::TRIANGLES || ent1->mode == eRenderMode::TRIANGLES_INTERPOLATED){
-                ent1->mode = eRenderMode::WIREFRAME;
-                ent2->mode = eRenderMode::WIREFRAME;
-                ent3->mode = eRenderMode::WIREFRAME;
-            }
-            else{
-                ent1->mode = eRenderMode::TRIANGLES;
-                ent2->mode = eRenderMode::TRIANGLES;
-                ent3->mode = eRenderMode::TRIANGLES;
-            }
-            break;
     }
 }
 
 void Application::OnMouseButtonDown( SDL_MouseButtonEvent event )
 {
-    last_mouse_position = Vector2(event.x, event.y);
-    if(event.button == SDL_BUTTON_LEFT)
-        left_button = true;
-    else if (event.button == SDL_BUTTON_RIGHT)
-        right_button = true;
+
 }
 
 void Application::OnMouseButtonUp( SDL_MouseButtonEvent event )
 {
-    if(event.button == SDL_BUTTON_LEFT)
-        left_button = false;
-    else if (event.button == SDL_BUTTON_RIGHT)
-        right_button = false;
+
 }
 
 void Application::OnMouseMove(SDL_MouseButtonEvent event)
 {
-    mouse_position = Vector2(event.x, event.y);
-    mouse_delta = mouse_position - last_mouse_position;
-    last_mouse_position = mouse_position;
-    if (left_button){
-        float yaw = mouse_delta.x * 0.005f;
-        float pitch = mouse_delta.y * 0.005f;
-        Vector3 view = (eye - center).Normalize();
-        
-        Matrix44 rotY;
-        rotY.MakeRotationMatrix(-yaw, up);
-        Vector3 right_axis = view.Cross(up).Normalize();
-        Matrix44 rotX;
-        rotX.MakeRotationMatrix(-pitch, right_axis);
-        
-        view = rotY * view;
-        view = rotX * view;
-        view = view.Normalize() * orbit_distance;
-        eye = center + view;
-    }
-    if (right_button){
-        float speed = 0.005f;
-        Vector3 view = (center - eye).Normalize();
-        Vector3 right_axis = view.Cross(up).Normalize();
-        Vector3 camera_up = right_axis.Cross(view).Normalize();
-
-        Vector3 offset = (right_axis * -mouse_delta.x + camera_up * -mouse_delta.y) * speed;
-        eye = eye + offset;
-        center = center + offset;
-    }
+    
 }
 
 void Application::OnWheel(SDL_MouseWheelEvent event)
 {
-	float dy = event.preciseY;
-    float speed_zoom = 1.0f;
-    orbit_distance -= dy * speed_zoom;
-    
-    if (orbit_distance < 0.1f) orbit_distance = 0.1f;
-    if (orbit_distance > 20.0f) orbit_distance = 20.0f;
-    
-    Vector3 view = (eye - center).Normalize();
-    eye = center + view * orbit_distance;
+	
 }
 
 void Application::OnFileChanged(const char* filename)

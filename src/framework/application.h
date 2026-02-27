@@ -25,31 +25,6 @@ public:
     //Lab 1
     Image canvas;   //Drawing surface
     
-    //Lab 2
-    
-    Camera* camera;
-    Entity* ent1;
-    Entity* ent2;
-    Entity* ent3;
-    Mesh* mesh1;
-    Mesh* mesh2;
-    Mesh* mesh3;
-    
-    float fov;
-    float near;
-    float far;
-    Vector3 center;
-    Vector3 eye;
-    Vector3 up;
-    
-    eMode current_mode;
-    eProperty selected_prop;
-    
-    Vector2 last_mouse_position;
-    bool left_button = false;
-    bool right_button = false;
-    float orbit_distance;
-    
 	float time;
 
 	// Input
