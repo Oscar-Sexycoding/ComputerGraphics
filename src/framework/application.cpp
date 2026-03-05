@@ -31,11 +31,11 @@ Application::~Application()
 
 void Application::Init(void)
 {
-    quad_mesh = new Mesh();
-    quad_mesh->CreateQuad();
+    quad = new Mesh();
+    quad->CreateQuad();
 
     //Load shader
-    current_shader = Shader::Get("res/shaders/quad.vs", "res/shaders/quad.fs");
+    shader = Shader::Get("res/shaders/quad.vs", "res/shaders/quad.fs");
 
     //Load image
     image_texture = Texture::Get("res/images/fruits.png");
@@ -54,6 +54,7 @@ void Application::Render(void)
 
     shader->Enable();
     shader->SetInt("u_mode", mode);
+    shader->SetTexture("u_texture", image_texture);
     quad->Render();
     shader->Disable();
 }

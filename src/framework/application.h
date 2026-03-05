@@ -11,6 +11,7 @@
 #include "mesh.h"
 #include "shader.h"
 
+
 class Application
 {
 public:
@@ -27,6 +28,7 @@ public:
     //Lab4
     Mesh* quad = nullptr;
     Shader* shader = nullptr;
+    Texture* image_texture = nullptr;
     int mode = 0;
     
 	float time;
