@@ -31,6 +31,7 @@ Application::~Application()
 
 void Application::Init(void)
 {
+    current_task = 1;
     current_subtask = 1;
     
     quad_mesh = new Mesh();
@@ -56,9 +57,8 @@ void Application::Render(void)
         current_shader->Enable();
         
         current_shader->SetFloat("u_time", time);
-        //current_shader->SetMatrix44("u_viewprojection", viewprojection);
-        //current_shader->SetVector3("u_lightpos", light_pos);
         
+        current_shader->SetInt("u_task", current_task);
         current_shader->SetInt("u_subtask", current_subtask);
         float aspect = (float)window_width / (float)window_height;
         current_shader->SetFloat("u_aspect", aspect);
@@ -72,7 +72,6 @@ void Application::Render(void)
         
         current_shader->Disable();
     }
-    
 }
 
 // Called after render
@@ -89,6 +88,8 @@ void Application::OnKeyPressed( SDL_KeyboardEvent event )
         case SDLK_ESCAPE: exit(0); break; // ESC key, kill the app
         case SDLK_a: current_subtask = 1; break;
         case SDLK_b: current_subtask = 2; break;
+        case SDLK_c: current_subtask = 3; break;
+        case SDLK_d: current_subtask = 4; break;
     }
 }
 
