@@ -34,12 +34,21 @@ void Application::Init(void)
     //Initialize canva
     
 	std::cout << "Initiating app..." << std::endl;
+    
+    quad = new Mesh();
+    quad->CreateQuad();
+    shader = Shader::Get("shaders/quad.vs", "shaders/quad.fs");
 }
 
 // Render one frame
 void Application::Render(void)
 {
-    
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    shader->Enable();
+    shader->SetInt("u_mode", mode);
+    quad->Render();
+    shader->Disable();
 }
 
 // Called after render
@@ -54,6 +63,10 @@ void Application::OnKeyPressed( SDL_KeyboardEvent event )
     // KEY CODES: https://wiki.libsdl.org/SDL2/SDL_Keycode
     switch(event.keysym.sym) {
         case SDLK_ESCAPE: exit(0); break; // ESC key, kill the app
+        case SDLK_1: mode = 1; break;
+        case SDLK_2: mode = 2; break;
+        case SDLK_3: mode = 3; break;
+        case SDLK_4: mode = 4; break;
     }
 }
 

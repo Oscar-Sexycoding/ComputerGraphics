@@ -8,6 +8,8 @@
 #include "framework.h"
 #include "image.h"
 #include "camera.h"
+#include "mesh.h"
+#include "shader.h"
 
 class Application
 {
@@ -21,6 +23,11 @@ public:
     
     //Lab 1
     Image canvas;   //Drawing surface
+    
+    //Lab4
+    Mesh* quad = nullptr;
+    Shader* shader = nullptr;
+    int mode = 0;
     
 	float time;
 
