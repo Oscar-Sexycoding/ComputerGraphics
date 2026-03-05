@@ -41,10 +41,6 @@ void Application::Init(void)
     image_texture = Texture::Get("res/images/fruits.png");
     
 	std::cout << "Initiating app..." << std::endl;
-    
-    quad = new Mesh();
-    quad->CreateQuad();
-    shader = Shader::Get("shaders/quad.vs", "shaders/quad.fs");
 }
 
 // Render one frame
