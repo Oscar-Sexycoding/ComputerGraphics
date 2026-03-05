@@ -31,7 +31,14 @@ Application::~Application()
 
 void Application::Init(void)
 {
-    //Initialize canva
+    quad_mesh = new Mesh();
+    quad_mesh->CreateQuad();
+
+    //Load shader
+    current_shader = Shader::Get("res/shaders/quad.vs", "res/shaders/quad.fs");
+
+    //Load image
+    image_texture = Texture::Get("res/images/fruits.png");
     
 	std::cout << "Initiating app..." << std::endl;
 }
@@ -39,7 +46,25 @@ void Application::Init(void)
 // Render one frame
 void Application::Render(void)
 {
-    
+    //Set bg color
+    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    if (current_shader) {
+        current_shader->Enable();
+        
+        current_shader->SetFloat("u_time", time);
+        current_shader->SetInt("u_task", current_task);
+        
+        if (image_texture) {
+            current_shader->SetTexture("u_texture", image_texture);
+        }
+
+        //Draw mesh
+        quad_mesh->Render();
+
+        current_shader->Disable();
+    }
 }
 
 // Called after render
