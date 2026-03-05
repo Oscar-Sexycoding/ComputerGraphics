@@ -90,6 +90,8 @@ void Application::OnKeyPressed( SDL_KeyboardEvent event )
         case SDLK_b: current_subtask = 2; break;
         case SDLK_c: current_subtask = 3; break;
         case SDLK_d: current_subtask = 4; break;
+        case SDLK_e: current_subtask = 5; break;
+        case SDLK_f: current_subtask = 6; break;
     }
 }
 
