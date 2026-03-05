@@ -29,7 +29,7 @@ public:
     Mesh* quad_mesh = nullptr;
     Shader* current_shader = nullptr;
     Texture* image_texture = nullptr;
-    int current_task = 1;
+    int current_subtask;
     
 	float time;
 

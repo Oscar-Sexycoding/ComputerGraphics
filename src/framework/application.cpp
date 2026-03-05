@@ -31,14 +31,16 @@ Application::~Application()
 
 void Application::Init(void)
 {
+    current_subtask = 1;
+    
     quad_mesh = new Mesh();
     quad_mesh->CreateQuad();
 
     //Load shader
-    current_shader = Shader::Get("res/shaders/quad.vs", "res/shaders/quad.fs");
-
-    //Load image
-    image_texture = Texture::Get("res/images/fruits.png");
+    current_shader = Shader::Get("shaders/quad.vs","shaders/quad.fs");
+    
+    //Load texture
+    image_texture = Texture::Get("images/fruits.png");
     
 	std::cout << "Initiating app..." << std::endl;
 }
@@ -54,7 +56,12 @@ void Application::Render(void)
         current_shader->Enable();
         
         current_shader->SetFloat("u_time", time);
-        current_shader->SetInt("u_task", current_task);
+        //current_shader->SetMatrix44("u_viewprojection", viewprojection);
+        //current_shader->SetVector3("u_lightpos", light_pos);
+        
+        current_shader->SetInt("u_subtask", current_subtask);
+        float aspect = (float)window_width / (float)window_height;
+        current_shader->SetFloat("u_aspect", aspect);
         
         if (image_texture) {
             current_shader->SetTexture("u_texture", image_texture);
@@ -62,9 +69,10 @@ void Application::Render(void)
 
         //Draw mesh
         quad_mesh->Render();
-
+        
         current_shader->Disable();
     }
+    
 }
 
 // Called after render
@@ -79,6 +87,8 @@ void Application::OnKeyPressed( SDL_KeyboardEvent event )
     // KEY CODES: https://wiki.libsdl.org/SDL2/SDL_Keycode
     switch(event.keysym.sym) {
         case SDLK_ESCAPE: exit(0); break; // ESC key, kill the app
+        case SDLK_a: current_subtask = 1; break;
+        case SDLK_b: current_subtask = 2; break;
     }
 }
 
