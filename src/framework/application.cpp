@@ -31,7 +31,14 @@ Application::~Application()
 
 void Application::Init(void)
 {
-    //Initialize canva
+    quad_mesh = new Mesh();
+    quad_mesh->CreateQuad();
+
+    //Load shader
+    current_shader = Shader::Get("res/shaders/quad.vs", "res/shaders/quad.fs");
+
+    //Load image
+    image_texture = Texture::Get("res/images/fruits.png");
     
 	std::cout << "Initiating app..." << std::endl;
     
