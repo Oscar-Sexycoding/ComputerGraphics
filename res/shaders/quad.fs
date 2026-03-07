@@ -37,9 +37,14 @@ void main()
         else if(u_subtask == 6){
             //float s = sin(v_uv.x);
             float s = 0.5 + 0.25*sin(v_uv.x*6.28);
-            float above = step(v_uv.y, s);
-            vec3 lerp = mix(vec3(0, above - 1.0, 0), vec3(0, above, 0), v_uv.y);
-            color = lerp;       //Make it darker
+            float below = step(v_uv.y, s);
+            float above = step(s, v_uv.y);
+            vec3 lerp_above = mix(vec3(0, above, 0), vec3(0, above - 1.0, 0), v_uv.y);
+            vec3 lerp_below = mix(vec3(0, below - 1.0, 0), vec3(0, below, 0), v_uv.y);
+            //color = mix(lerp_above, lerp_below, v_uv.y);   //Make it darker
+            //color = lerp_above;
+            color = lerp_above * above + lerp_below * below;
+            
             
         }
     }
