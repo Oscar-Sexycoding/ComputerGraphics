@@ -1,7 +1,6 @@
 #include "mesh.h"
 #include "shader.h"
 #include "camera.h"
-#include "texture.h"
 #include "framework.h"
 
 class Entity {
@@ -16,5 +15,5 @@ public:
     void Render(Camera* camera);
     
     Entity(Mesh* me, Matrix44 mo);
-    
+};
 

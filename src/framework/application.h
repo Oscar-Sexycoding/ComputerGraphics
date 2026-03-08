@@ -1,7 +1,3 @@
-/*  
-	+ This class encapsulates the application, is in charge of creating the data, getting the user input, process the update and render.
-*/
-
 #pragma once
 
 #include "main/includes.h"
@@ -10,7 +6,6 @@
 #include "camera.h"
 #include "mesh.h"
 #include "shader.h"
-#include "texture.h"
 
 class Application
 {
@@ -22,9 +17,6 @@ public:
 	int window_height;
     int rect_border_width;
     
-    //Lab 1
-    Image canvas;   //Drawing surface
-    
     //Lab 4
     Mesh* quad_mesh = nullptr;
     Shader* current_shader = nullptr;
@@ -32,6 +24,9 @@ public:
     int current_task;
     int current_subtask;
     
+    Camera* camera = nullptr;
+    Entity* entity = nullptr;
+    Shader* raster_shader = nullptr;
     
 	float time;
 
@@ -50,7 +45,7 @@ public:
 	void OnFileChanged(const char* filename);
 
 	// CPU Global framebuffer
-	Image framebuffer;
+	//Image framebuffer;
 
 	// Constructor and main methods
 	Application(const char* caption, int width, int height);
@@ -62,10 +57,10 @@ public:
 
 	// Other methods to control the app
 	void SetWindowSize(int width, int height) {
-		glViewport( 0,0, width, height );
+		glViewport( 0,0, width, height);
 		this->window_width = width;
 		this->window_height = height;
-		this->framebuffer.Resize(width, height);
+		//this->framebuffer.Resize(width, height);
 	}
 
 	Vector2 GetWindowSize()

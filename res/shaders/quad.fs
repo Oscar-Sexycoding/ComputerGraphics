@@ -42,7 +42,6 @@ void main()
         }
         
         else if(u_subtask == 6){
-            //float s = sin(v_uv.x);
             float s = 0.5 + 0.25*sin(v_uv.x*6.28);
             float below = step(v_uv.y, s);
             float above = step(s, v_uv.y);
@@ -50,11 +49,10 @@ void main()
             vec3 lerp_below = mix(vec3(0, below - 1.0, 0), vec3(0, below, 0), v_uv.y);
             color = lerp_above * above + lerp_below * below;
         }
-        
         gl_FragColor = vec4(color, 1.0);
     }
     
-    if (u_task == 2){
+    else if (u_task == 2){
         vec4 texture_color = texture2D(u_texture, v_uv);
         if(u_subtask == 1){
             float gray = dot(texture_color.rgb, vec3(0.299, 0.587, 0.114));
@@ -102,7 +100,7 @@ void main()
         gl_FragColor = texture_color;
     }
     
-    if (u_task == 3){
+    else if (u_task == 3){
         vec4 texture_color = texture2D(u_texture, v_uv);
         
         if(u_subtask == 1){
@@ -118,7 +116,6 @@ void main()
             uv.x += 0.03 * sin(uv.x * 10.0 + u_time * 3.0);
             texture_color = texture2D(u_texture, uv);
         }
-        
         gl_FragColor = texture_color;
     }
     

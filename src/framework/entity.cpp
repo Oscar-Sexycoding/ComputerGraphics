@@ -1,9 +1,5 @@
 #include "main/includes.h"
-#include "framework.h"
 #include "entity.h"
-#include "shader.h"
-#include "texture.h"
-
 
 Entity::Entity(Mesh* me, Matrix44 mo){
     this->mesh = me;
@@ -15,10 +11,7 @@ void Entity::Render(Camera* camera){
 
     shader->SetMatrix44("u_model", model);
     shader->SetMatrix44("u_viewprojection", camera->viewprojection_matrix);
-    
-    if (texture) {
-        shader->SetTexture("u_texture", texture);
-    }
+    shader->SetTexture("u_texture", texture);
 
     mesh->Render();
 

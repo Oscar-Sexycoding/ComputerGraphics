@@ -2,9 +2,9 @@
 #include "mesh.h"
 #include "shader.h"
 #include "utils.h"
-
 #include "framework.h"
 #include "image.h"
+#include "entity.h"
 
 Application::Application(const char* caption, int width, int height)
 {
@@ -22,7 +22,7 @@ Application::Application(const char* caption, int width, int height)
 	this->window_height = h;
 	this->keystate = SDL_GetKeyboardState(nullptr);
 
-	this->framebuffer.Resize(w, h);
+	//this->framebuffer.Resize(w, h);
 }
 
 Application::~Application()
@@ -34,6 +34,7 @@ void Application::Init(void)
     current_task = 1;
     current_subtask = 1;
     
+    //Task 1, 2, 3
     quad_mesh = new Mesh();
     quad_mesh->CreateQuad();
 
@@ -42,6 +43,24 @@ void Application::Init(void)
     
     //Load texture
     image_texture = Texture::Get("images/fruits.png");
+    
+    //Task 4
+    camera = new Camera();
+    camera->LookAt(Vector3(0.f, 0.f, 1.5f), Vector3(0.f, -0.25f, 0.f), Vector3(0.f, 1.f, 0.f));
+    camera->SetPerspective(45.f, window_width/(float)window_height, 0.1f, 10.0f);
+
+    raster_shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs");
+
+    Mesh* head_mesh = new Mesh();
+    head_mesh->LoadOBJ("meshes/lee.obj");
+    
+    Texture* head_texture = Texture::Get("textures/lee_color_specular.tga");
+
+    Matrix44 model_matrix;
+    model_matrix.MakeTranslationMatrix(0.f, -0.5f, 0.f);
+    entity = new Entity(head_mesh, model_matrix);
+    entity->shader = raster_shader;
+    entity->texture = head_texture;
     
 	std::cout << "Initiating app..." << std::endl;
 }
@@ -52,29 +71,39 @@ void Application::Render(void)
     //Set bg color
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    if (current_shader) {
-        current_shader->Enable();
-        
-        current_shader->SetFloat("u_time", time);
-        
-        current_shader->SetInt("u_task", current_task);
-        current_shader->SetInt("u_subtask", current_subtask);
-        float aspect = (float)window_width / (float)window_height;
-        current_shader->SetFloat("u_aspect", aspect);
-        
-        if (image_texture) {
-            current_shader->SetTexture("u_texture", image_texture);
+    
+    if (current_task < 4){
+        if (current_shader) {
+            current_shader->Enable();
+            
+            current_shader->SetFloat("u_time", time);
+            
+            current_shader->SetInt("u_task", current_task);
+            current_shader->SetInt("u_subtask", current_subtask);
+            float aspect = (float)window_width / (float)window_height;
+            current_shader->SetFloat("u_aspect", aspect);
+            
+            if (image_texture) {
+                current_shader->SetTexture("u_texture", image_texture);
+            }
+            current_shader->SetVector2("u_texel_size", Vector2(1.0/window_width, 1.0/window_height));
+            current_shader->SetFloat("u_time", time);
+            
+            glEnable(GL_DEPTH_TEST);
+            
+            //Draw mesh
+            quad_mesh->Render();
+            
+            current_shader->Disable();
         }
-        current_shader->SetVector2("u_texel_size", Vector2(1.0/window_width, 1.0/window_height));
-        current_shader->SetFloat("u_time", time);
-        
+    }
+    else if (current_task == 4){
         glEnable(GL_DEPTH_TEST);
-
-        //Draw mesh
-        quad_mesh->Render();
+        glDepthFunc(GL_LEQUAL);
         
-        current_shader->Disable();
+        camera->SetAspectRatio((float)window_width / (float)window_height);
+        camera->UpdateViewProjectionMatrix();
+        entity->Render(camera);
     }
 }
 
@@ -93,6 +122,7 @@ void Application::OnKeyPressed( SDL_KeyboardEvent event )
         case SDLK_1: current_task = 1; break;
         case SDLK_2: current_task = 2; break;
         case SDLK_3: current_task = 3; break;
+        case SDLK_4: current_task = 4; break;
         case SDLK_a: current_subtask = 1; break;
         case SDLK_b: current_subtask = 2; break;
         case SDLK_c: current_subtask = 3; break;

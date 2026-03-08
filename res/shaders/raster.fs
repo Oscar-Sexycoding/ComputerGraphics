@@ -1,7 +1,8 @@
-// This variables comes from the vertex shader
+// These variables come from the vertex shader
 // They are baricentric interpolated by pixel according to the distance to every vertex
 varying vec2 v_uv;
 uniform sampler2D u_texture;
+
 void main()
 {
 	// Set the ouput color per pixel
