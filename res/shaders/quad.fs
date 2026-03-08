@@ -4,6 +4,7 @@ uniform int u_task;
 uniform int u_subtask;
 uniform float u_aspect;
 uniform vec2 u_texel_size;
+uniform float u_time;
 
 // Receive the texture as a sampler2D from our application
 uniform sampler2D u_texture;
@@ -96,6 +97,26 @@ void main()
             sum += texture2D(u_texture, v_uv + vec2( 1.0, 1.0)*u_texel_size * 4.0).rgb;
 
             texture_color.rgb = sum / 9.0;
+        }
+        
+        gl_FragColor = texture_color;
+    }
+    
+    if (u_task == 3){
+        vec4 texture_color = texture2D(u_texture, v_uv);
+        
+        if(u_subtask == 1){
+            float t = (sin(u_time) + 1.0) * 0.5;
+            float pixels = mix(20.0, 500.0, t);
+            vec2 uv = floor(v_uv * pixels) / pixels;
+            texture_color = texture2D(u_texture, uv);
+        }
+        
+        else if(u_subtask == 2){
+            vec2 uv = v_uv;
+            uv.y += 0.03 * sin(uv.x * 10.0 + u_time * 3.0);
+            uv.x += 0.03 * sin(uv.x * 10.0 + u_time * 3.0);
+            texture_color = texture2D(u_texture, uv);
         }
         
         gl_FragColor = texture_color;
