@@ -5,17 +5,25 @@ Entity::Entity(Mesh* me, Matrix44 mo){
     this->mesh = me;
     this->model = mo;
 }
-
+/*
 void Entity::Render(Camera* camera){
-    shader->Enable();
+    //shader->Enable();
 
-    shader->SetMatrix44("u_model", model);
-    shader->SetMatrix44("u_viewprojection", camera->viewprojection_matrix);
-    shader->SetTexture("u_texture", texture);
+    //shader->SetMatrix44("u_model", model);
+    //shader->SetMatrix44("u_viewprojection", camera->viewprojection_matrix);
+    //shader->SetTexture("u_texture", texture);
+    if(!mesh || !material) return;
+    material->Enable();
+    material->shader->SetMatrix44("u_model", model);
+    material->shader->SetMatrix44("u_viewprojection", camera->viewprojection_matrix);
+    mesh->Render(GL_TRIANGLES);
+    material->Disable();
+    
+    //mesh->Render();
 
-    mesh->Render();
-
-    shader->Disable();
+    //shader->Disable();
 }
+*/
+void Entity::Render(sUniformData& uniformData);
 
 

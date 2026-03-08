@@ -77,7 +77,6 @@ void Application::Render(void)
             current_shader->Enable();
             
             current_shader->SetFloat("u_time", time);
-            
             current_shader->SetInt("u_task", current_task);
             current_shader->SetInt("u_subtask", current_subtask);
             float aspect = (float)window_width / (float)window_height;
@@ -87,7 +86,6 @@ void Application::Render(void)
                 current_shader->SetTexture("u_texture", image_texture);
             }
             current_shader->SetVector2("u_texel_size", Vector2(1.0/window_width, 1.0/window_height));
-            current_shader->SetFloat("u_time", time);
             
             glEnable(GL_DEPTH_TEST);
             
