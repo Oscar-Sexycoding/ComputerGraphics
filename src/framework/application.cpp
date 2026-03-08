@@ -31,6 +31,7 @@ Application::~Application()
 
 void Application::Init(void)
 {
+    current_lab = 1;
     current_task = 1;
     current_subtask = 1;
     
@@ -52,11 +53,12 @@ void Application::Init(void)
     //Lab 5
     this->ambient_light = Vector3(0.2f, 0.2f, 0.2f);
     this->main_light.position = Vector3(10.f, 10.f, 10.f);
-    this->main_light.intensity = Vector3(1.f, 1.f, 1.f);
+    this->main_light.intensity = Vector3(300.f, 300.f, 300.f);
 
     Material* head_material = new Material();
     head_material->shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs");
     head_material->color_texture = Texture::Get("textures/lee_color_specular.tga");
+    head_material->normal_texture = Texture::Get("textures/lee_normal.tga");
     
     Mesh* head_mesh = new Mesh();
     head_mesh->LoadOBJ("meshes/lee.obj");
@@ -66,6 +68,10 @@ void Application::Init(void)
     
     entity = new Entity(head_mesh, model_matrix);
     entity->material = head_material;
+    
+    uniformData.show_color_texture = false;
+    uniformData.show_specular_texture = false;
+    uniformData.show_normal_texture = false;
     
 	std::cout << "Initiating app..." << std::endl;
 }
@@ -77,30 +83,46 @@ void Application::Render(void)
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-    if (current_task < 4){
-        if (current_shader) {
-            current_shader->Enable();
-            
-            current_shader->SetFloat("u_time", time);
-            current_shader->SetInt("u_task", current_task);
-            current_shader->SetInt("u_subtask", current_subtask);
-            float aspect = (float)window_width / (float)window_height;
-            current_shader->SetFloat("u_aspect", aspect);
-            
-            if (image_texture) {
-                current_shader->SetTexture("u_texture", image_texture);
+    if (current_lab == 1){
+        if (current_task < 4){
+            if (current_shader) {
+                current_shader->Enable();
+                
+                current_shader->SetFloat("u_time", time);
+                current_shader->SetInt("u_task", current_task);
+                current_shader->SetInt("u_subtask", current_subtask);
+                float aspect = (float)window_width / (float)window_height;
+                current_shader->SetFloat("u_aspect", aspect);
+                
+                if (image_texture) {
+                    current_shader->SetTexture("u_texture", image_texture);
+                }
+                current_shader->SetVector2("u_texel_size", Vector2(1.0/window_width, 1.0/window_height));
+                
+                glEnable(GL_DEPTH_TEST);
+                
+                //Draw mesh
+                quad_mesh->Render();
+                
+                current_shader->Disable();
             }
-            current_shader->SetVector2("u_texel_size", Vector2(1.0/window_width, 1.0/window_height));
-            
+        }
+        else if (current_task == 4){
             glEnable(GL_DEPTH_TEST);
+            glDepthFunc(GL_LEQUAL);
             
-            //Draw mesh
-            quad_mesh->Render();
+            camera->SetAspectRatio((float)window_width / (float)window_height);
+            camera->UpdateViewProjectionMatrix();
             
-            current_shader->Disable();
+            uniformData.viewprojection_matrix = camera->viewprojection_matrix;
+            uniformData.camera_position = camera->eye;
+            uniformData.ambient_light = this->ambient_light;
+            uniformData.light = this->main_light;
+            
+            entity->Render(uniformData);
         }
     }
-    else if (current_task == 4){
+    else {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
         
@@ -128,16 +150,34 @@ void Application::OnKeyPressed( SDL_KeyboardEvent event )
     // KEY CODES: https://wiki.libsdl.org/SDL2/SDL_Keycode
     switch(event.keysym.sym) {
         case SDLK_ESCAPE: exit(0); break; // ESC key, kill the app
-        case SDLK_1: current_task = 1; break;
+        case SDLK_1:
+            if(current_lab == 1) current_task = 1; break;
         case SDLK_2: current_task = 2; break;
         case SDLK_3: current_task = 3; break;
-        case SDLK_4: current_task = 4; break;
+        case SDLK_4: current_task = 4;
+            if(current_lab == 1) entity->material->shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs");
+            break;
         case SDLK_a: current_subtask = 1; break;
         case SDLK_b: current_subtask = 2; break;
-        case SDLK_c: current_subtask = 3; break;
+        case SDLK_c:
+            if(current_lab == 1) current_subtask = 3;
+            else uniformData.show_color_texture = !uniformData.show_color_texture;
+            break;
         case SDLK_d: current_subtask = 4; break;
         case SDLK_e: current_subtask = 5; break;
         case SDLK_f: current_subtask = 6; break;
+        case SDLK_s: uniformData.show_specular_texture = !uniformData.show_specular_texture; break;
+        case SDLK_n: uniformData.show_normal_texture = !uniformData.show_normal_texture; break;
+        case SDLK_g:
+            if(current_lab == 2) entity->material->shader = Shader::Get("shaders/gouraud.vs", "shaders/gouraud.fs");
+            break;
+        case SDLK_p:
+            if(current_lab == 2) entity->material->shader = Shader::Get("shaders/phong.vs", "shaders/phong.fs");
+            break;
+        case SDLK_l:
+            if (current_lab == 1) current_lab = 2;
+            else current_lab = 1;
+        
     }
 }
 

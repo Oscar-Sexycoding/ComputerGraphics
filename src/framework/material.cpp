@@ -4,21 +4,24 @@ Material::Material()
 {
     shader = nullptr;
     color_texture = nullptr;
-    specular_texture = nullptr;
     normal_texture = nullptr;
 
     Ka = Vector3(0.1f, 0.1f, 0.1f);
-    Kd = Vector3(1.0f, 1.0f, 1.0f);
+    Kd = Vector3(0.8f, 0.6f, 0.4f);
     Ks = Vector3(1.0f, 1.0f, 1.0f);
-    shininess = 32.0f;
+    shininess = 30.0f;
 }
 
 void Material::Enable(const sUniformData& uniformData)
 {
+    if (!shader) return;
+    
     shader->Enable();
     
+    shader->SetInt("u_show_color_texture", uniformData.show_color_texture);
+    shader->SetInt("u_show_specular_texture", uniformData.show_specular_texture);
+    shader->SetInt("u_show_normal_texture", uniformData.show_normal_texture);
     if (color_texture) shader->SetTexture("u_color_texture", color_texture);
-    if (specular_texture) shader->SetTexture("u_specular_texture", specular_texture);
     if (normal_texture) shader->SetTexture("u_normal_texture", normal_texture);
     
     shader->SetVector3("u_Ka", Ka);

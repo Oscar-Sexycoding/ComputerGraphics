@@ -16,6 +16,10 @@ struct sUniformData {
     Vector3 ambient_light;
     Vector3 camera_position;
     sLight light;
+    
+    bool show_color_texture;
+    bool show_specular_texture;
+    bool show_normal_texture;
 };
 
 class Material
@@ -23,8 +27,7 @@ class Material
 public:
 
     Shader* shader;
-    Texture* color_texture;
-    Texture* specular_texture;
+    Texture* color_texture; //Includes specular
     Texture* normal_texture;
     Vector3 Ka; // Ambient component
     Vector3 Kd; // Diffuse component

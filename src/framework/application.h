@@ -23,6 +23,7 @@ public:
     Texture* image_texture = nullptr;
     int current_task;
     int current_subtask;
+    int current_lab; //1 = 4, 2 = 5
     
     Camera* camera = nullptr;
     Entity* entity = nullptr;
