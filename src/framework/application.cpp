@@ -66,6 +66,7 @@ void Application::Render(void)
         if (image_texture) {
             current_shader->SetTexture("u_texture", image_texture);
         }
+        current_shader->SetVector2("u_texel_size", Vector2(1.0/window_width, 1.0/window_height));
 
         //Draw mesh
         quad_mesh->Render();
@@ -86,6 +87,8 @@ void Application::OnKeyPressed( SDL_KeyboardEvent event )
     // KEY CODES: https://wiki.libsdl.org/SDL2/SDL_Keycode
     switch(event.keysym.sym) {
         case SDLK_ESCAPE: exit(0); break; // ESC key, kill the app
+        case SDLK_1: current_task = 1; break;
+        case SDLK_2: current_task = 2; break;
         case SDLK_a: current_subtask = 1; break;
         case SDLK_b: current_subtask = 2; break;
         case SDLK_c: current_subtask = 3; break;
