@@ -68,6 +68,8 @@ void Application::Render(void)
         }
         current_shader->SetVector2("u_texel_size", Vector2(1.0/window_width, 1.0/window_height));
         current_shader->SetFloat("u_time", time);
+        
+        glEnable(GL_DEPTH_TEST);
 
         //Draw mesh
         quad_mesh->Render();

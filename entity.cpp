@@ -3,6 +3,8 @@
 #include "mesh.h"
 #include "camera.h"
 #include "entity.h"
+#include "shader.h"
+#include "texture.h"
 
 
 Entity::Entity(Mesh* me, Matrix44 mo){
@@ -11,7 +13,7 @@ Entity::Entity(Mesh* me, Matrix44 mo){
 }
 
 void Entity::Render(Camera* camera){
-    
+
 }
 
 
