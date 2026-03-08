@@ -5,7 +5,7 @@
 #include "image.h"
 #include "camera.h"
 #include "mesh.h"
-#include "shader.h"
+#include "material.h"
 
 class Application
 {
@@ -27,6 +27,10 @@ public:
     Camera* camera = nullptr;
     Entity* entity = nullptr;
     Shader* raster_shader = nullptr;
+    
+    sUniformData uniformData;
+    Vector3 ambient_light;
+    sLight main_light;
     
 	float time;
 

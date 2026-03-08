@@ -15,7 +15,6 @@ public:
     Material* material;
     //void Render(Camera* camera);
     void Render(sUniformData& uniformData);
-    
     Entity(Mesh* me, Matrix44 mo);
 };
 

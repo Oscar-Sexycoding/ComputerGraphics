@@ -16,20 +16,20 @@ Material::Material()
 void Material::Enable(const sUniformData& uniformData)
 {
     shader->Enable();
-    
-    if (color_texture) shader->SetTexture("u_color_texture", color_texture);
-    if (specular_texture) shader->SetTexture("u_specular_texture", specular_texture);
-    if (normal_texture) shader->SetTexture("u_normal_texture", normal_texture);
-    
+
     shader->SetVector3("u_Ka", Ka);
     shader->SetVector3("u_Kd", Kd);
     shader->SetVector3("u_Ks", Ks);
     shader->SetFloat("u_shininess", shininess);
+    if (color_texture) shader->SetTexture("u_color_texture", color_texture);
+    if (specular_texture) shader->SetTexture("u_specular_texture", specular_texture);
+    if (normal_texture) shader->SetTexture("u_normal_texture", normal_texture);
 
     shader->SetMatrix44("u_model", uniformData.model_matrix);
     shader->SetMatrix44("u_viewprojection", uniformData.viewprojection_matrix);
-    shader->SetVector3("u_camera_pos", uniformData.camera_position);
     shader->SetVector3("u_ambient_light", uniformData.ambient_light);
+    shader->SetVector3("u_camera_position", uniformData.camera_position);
+    
     shader->SetVector3("u_light_pos", uniformData.light.position);
     shader->SetVector3("u_light_intensity", uniformData.light.intensity);
 }

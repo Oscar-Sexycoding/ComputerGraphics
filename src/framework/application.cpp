@@ -49,18 +49,23 @@ void Application::Init(void)
     camera->LookAt(Vector3(0.f, 0.f, 1.5f), Vector3(0.f, -0.25f, 0.f), Vector3(0.f, 1.f, 0.f));
     camera->SetPerspective(45.f, window_width/(float)window_height, 0.1f, 10.0f);
 
-    raster_shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs");
+    //Lab 5
+    this->ambient_light = Vector3(0.2f, 0.2f, 0.2f);
+    this->main_light.position = Vector3(10.f, 10.f, 10.f);
+    this->main_light.intensity = Vector3(1.f, 1.f, 1.f);
 
+    Material* head_material = new Material();
+    head_material->shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs");
+    head_material->color_texture = Texture::Get("textures/lee_color_specular.tga");
+    
     Mesh* head_mesh = new Mesh();
     head_mesh->LoadOBJ("meshes/lee.obj");
     
-    Texture* head_texture = Texture::Get("textures/lee_color_specular.tga");
-
     Matrix44 model_matrix;
     model_matrix.MakeTranslationMatrix(0.f, -0.5f, 0.f);
+    
     entity = new Entity(head_mesh, model_matrix);
-    entity->shader = raster_shader;
-    entity->texture = head_texture;
+    entity->material = head_material;
     
 	std::cout << "Initiating app..." << std::endl;
 }
@@ -101,7 +106,13 @@ void Application::Render(void)
         
         camera->SetAspectRatio((float)window_width / (float)window_height);
         camera->UpdateViewProjectionMatrix();
-        entity->Render(camera);
+        
+        uniformData.viewprojection_matrix = camera->viewprojection_matrix;
+        uniformData.camera_position = camera->eye;
+        uniformData.ambient_light = this->ambient_light;
+        uniformData.light = this->main_light;
+        
+        entity->Render(uniformData);
     }
 }
 
