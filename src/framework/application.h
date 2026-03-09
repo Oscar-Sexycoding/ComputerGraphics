@@ -33,6 +33,10 @@ public:
     Vector3 ambient_light;
     sLight main_light;
     
+    //multipass
+    std::vector<sLight> lights;
+    int active_lights = 1;
+    
 	float time;
 
 	// Input

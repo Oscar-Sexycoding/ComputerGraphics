@@ -51,9 +51,26 @@ void Application::Init(void)
     camera->SetPerspective(45.f, window_width/(float)window_height, 0.1f, 10.0f);
 
     //Lab 5
+    active_lights = 1;
     this->ambient_light = Vector3(0.2f, 0.2f, 0.2f);
     this->main_light.position = Vector3(10.f, 10.f, 10.f);
     this->main_light.intensity = Vector3(300.f, 300.f, 300.f);
+    lights.push_back(main_light);
+
+    sLight second;
+    second.position = Vector3(-10.f,10.f,5.f);
+    second.intensity = Vector3(50.f,0.f,0.f);
+    lights.push_back(second);
+
+    sLight third;
+    third.position = Vector3(5.f,8.f,-5.f);
+    third.intensity = Vector3(0.f,0.f,50.f);
+    lights.push_back(third);
+    
+    sLight fourth;
+    fourth.position = Vector3(6.f,-10.f,6.f);
+    fourth.intensity = Vector3(0.f,50.f,0.f);
+    lights.push_back(fourth);
 
     Material* head_material = new Material();
     head_material->shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs");
@@ -131,10 +148,41 @@ void Application::Render(void)
         
         uniformData.viewprojection_matrix = camera->viewprojection_matrix;
         uniformData.camera_position = camera->eye;
+
+        Material* material = entity->material;
+        if(!material || !material->shader) return;
+
+        for(int i = 0; i < active_lights && i < lights.size(); ++i)
+        {
+            if(i == 0)
+            {
+                glDisable(GL_BLEND);
+                uniformData.ambient_light = this->ambient_light;
+            }
+            else
+            {
+                glEnable(GL_BLEND);
+                glBlendFunc(GL_ONE, GL_ONE);
+                uniformData.ambient_light = Vector3(0.0f, 0.0f, 0.0f);
+            }
+                uniformData.light = lights[i];
+                uniformData.model_matrix = entity->model;
+                entity->material->Enable(uniformData);
+                entity->mesh->Render();
+        }
+        /*
+        camera->SetAspectRatio((float)window_width / (float)window_height);
+        camera->UpdateViewProjectionMatrix();
+        
+        uniformData.viewprojection_matrix = camera->viewprojection_matrix;
+        uniformData.camera_position = camera->eye;
         uniformData.ambient_light = this->ambient_light;
         uniformData.light = this->main_light;
         
-        entity->Render(uniformData);
+        //entity->Render(uniformData);
+        */
+        glDisable(GL_BLEND);
+        material->Disable();
     }
 }
 
@@ -151,11 +199,23 @@ void Application::OnKeyPressed( SDL_KeyboardEvent event )
     switch(event.keysym.sym) {
         case SDLK_ESCAPE: exit(0); break; // ESC key, kill the app
         case SDLK_1:
-            if(current_lab == 1) current_task = 1; break;
-        case SDLK_2: current_task = 2; break;
-        case SDLK_3: current_task = 3; break;
-        case SDLK_4: current_task = 4;
-            if(current_lab == 1) entity->material->shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs");
+            if(current_lab == 1) current_task = 1;
+            else active_lights = 1;
+            break;
+        case SDLK_2:
+            if (current_lab == 1)current_task = 2;
+            else active_lights = 2;
+            break;
+        case SDLK_3:
+            if(current_lab == 1) current_task = 3;
+            else active_lights = 3;
+            break;
+        case SDLK_4:
+            if(current_lab == 1) {
+                current_task = 4;
+                entity->material->shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs");
+            }
+            else active_lights = 4;
             break;
         case SDLK_a: current_subtask = 1; break;
         case SDLK_b: current_subtask = 2; break;
@@ -177,8 +237,9 @@ void Application::OnKeyPressed( SDL_KeyboardEvent event )
         case SDLK_l:
             if (current_lab == 1) current_lab = 2;
             else current_lab = 1;
-        
+            break;
     }
+    active_lights = std::min(active_lights, (int)lights.size());
 }
 
 void Application::OnMouseButtonDown( SDL_MouseButtonEvent event )
